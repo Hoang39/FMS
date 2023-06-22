@@ -1,20 +1,34 @@
-import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View } from 'react-native';
+import { NavigationContainer } from "@react-navigation/native";
+import { createNativeStackNavigator } from "@react-navigation/native-stack";
+import { ActionSheetProvider } from '@expo/react-native-action-sheet';
+
+import SignIn from './src/screens/SignIn/signIn'
+import InputFuel from './src/screens/InputFuel/inputFuel'
+import FormFuel from './src/screens/InputFuel/formFuel'
+import InputFile from './src/screens/InputFile/inputFile'
+import Registry from "./src/screens/Registry/registry";
+import Toll from "./src/screens/Toll/toll";
+
+const Stack = createNativeStackNavigator();
 
 export default function App() {
   return (
-    <View style={styles.container}>
-      <Text>Open up App.js to start working on your app!</Text>
-      <StatusBar style="auto" />
-    </View>
+    <ActionSheetProvider>
+      <NavigationContainer>
+        <Stack.Navigator
+          initialRouteName="SignIn"
+          screenOptions={{ headerShown: false }}
+        >
+          <Stack.Screen name="SignIn" component={SignIn} />
+          <Stack.Screen name="InputFuel" component={InputFuel} />
+          <Stack.Screen name="FormFuel" component={FormFuel} />
+          <Stack.Screen name="InputFile" component={InputFile} />
+          <Stack.Screen name="Registry" component={Registry} />
+          <Stack.Screen name="Toll" component={Toll} />
+
+        </Stack.Navigator>
+
+      </NavigationContainer>
+    </ActionSheetProvider>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});
