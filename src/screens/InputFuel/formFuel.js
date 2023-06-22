@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import { Pressable, View, Text, StatusBar, ScrollView, TextInput, Image } from 'react-native'
+import { useActionSheet } from '@expo/react-native-action-sheet';
 import DropDownPicker from 'react-native-dropdown-picker';
 import DateTimePickerModal from "react-native-modal-datetime-picker";
 import * as ImagePicker from 'expo-image-picker'
@@ -42,6 +43,7 @@ const formatTime = (date) => {
 const FormFuel = ({ navigation }) => {
     const [hasGalleryPermission, setHasGalleryPermission] = useState(null);
     const [hasCameraPermission, setHasCameraPermission] = useState(null);
+    const { showActionSheetWithOptions } = useActionSheet();
 
     const [imagePicker, setImagePicker] = useState([]);
 
@@ -130,6 +132,10 @@ const FormFuel = ({ navigation }) => {
 
         if (!result.canceled)
             setImagePicker(imagePicker.concat([result.assets[0].uri]));
+    }
+
+    const pickOptions = () => {
+        
     }
 
     if (hasGalleryPermission === false || hasCameraPermission === false) 
