@@ -22,7 +22,7 @@ const formatDate = (date) => {
     return [day, month, year].join('-');
 }
 
-const Registry = ({ navigation }) => {
+const HistoryFuel = ({ navigation }) => {
     const [isDatePickerVisible, setDatePickerVisibility] = useState(false);
     const [datePicker, setDatePicker] = useState(null)
 
@@ -32,28 +32,28 @@ const Registry = ({ navigation }) => {
             <Text className='text-[#ff0000] text-xs'>Xóa</Text>
         </Pressable>
     )
-    const tableHead = ['Trung tâm đăng kiểm','Ngày đăng kiểm','Ngày hết hạn','']
+    const tableHead = ['Cơ sở xăng dầu','Thời gian nạp','Tổng tiền','Chế độ','']
     const tableData = [
-        ['Trung Tâm đăng kiểm xe cơ giới 9904D - Bắc Ninh','09/06/2023','09/06/2023',removeBtn(0)],
-        ['Trung Tâm đăng kiểm xe cơ giới 9801S - Bắc Giang','09/06/2023','09/06/2023',removeBtn(0)],
-        ['Công ty cổ phần đăng kiểm Bắc Kạn - 9701D','09/06/2023','09/06/2023',removeBtn(0)],
-        ['Trung Tâm đăng kiểm xe cơ giới 8802D - Vĩnh Phúc','09/06/2023','09/06/2023',removeBtn(0)],
-        ['Trung Tâm đăng kiểm xe cơ giới 9904D - Bắc Ninh','09/06/2023','09/06/2023',removeBtn(0)],
-        ['Trung Tâm đăng kiểm xe cơ giới 9801S - Bắc Giang','09/06/2023','09/06/2023',removeBtn(0)],
-        ['Công ty cổ phần đăng kiểm Bắc Kạn - 9701D','09/06/2023','09/06/2023',removeBtn(0)],
-        ['Trung Tâm đăng kiểm xe cơ giới 8802D - Vĩnh Phúc','09/06/2023','09/06/2023',removeBtn(0)],
-        ['Trung Tâm đăng kiểm xe cơ giới 9904D - Bắc Ninh','09/06/2023','09/06/2023',removeBtn(0)],
-        ['Trung Tâm đăng kiểm xe cơ giới 9801S - Bắc Giang','09/06/2023','09/06/2023',removeBtn(0)],
-        ['Công ty cổ phần đăng kiểm Bắc Kạn - 9701D','09/06/2023','09/06/2023',removeBtn(0)],
-        ['Trung Tâm đăng kiểm xe cơ giới 8802D - Vĩnh Phúc','09/06/2023','09/06/2023',removeBtn(0)]
+        ['Trung Tâm đăng kiểm xe cơ giới 9904D - Bắc Ninh','12h00 09/06/2023','1 000 000','Nạp',removeBtn(0)],
+        ['Trung Tâm đăng kiểm xe cơ giới 9801S - Bắc Giang','12h00 09/06/2023','100 000','Xả',removeBtn(0)],
+        ['Công ty cổ phần đăng kiểm Bắc Kạn - 9701D','12h00 09/06/2023','567 000','Nạp',removeBtn(0)],
+        ['Trung Tâm đăng kiểm xe cơ giới 8802D - Vĩnh Phúc','23h59 09/06/2023','20 000 000','Xả',removeBtn(0)],
+        ['Trung Tâm đăng kiểm xe cơ giới 9904D - Bắc Ninh','12h00 09/06/2023','1 000 000','Nạp',removeBtn(0)],
+        ['Trung Tâm đăng kiểm xe cơ giới 9801S - Bắc Giang','12h00 09/06/2023','100 000','Xả',removeBtn(0)],
+        ['Công ty cổ phần đăng kiểm Bắc Kạn - 9701D','12h00 09/06/2023','567 000','Nạp',removeBtn(0)],
+        ['Trung Tâm đăng kiểm xe cơ giới 8802D - Vĩnh Phúc','23h59 09/06/2023','20 000 000','Xả',removeBtn(0)],
+        ['Trung Tâm đăng kiểm xe cơ giới 9904D - Bắc Ninh','12h00 09/06/2023','1 000 000','Nạp',removeBtn(0)],
+        ['Trung Tâm đăng kiểm xe cơ giới 9801S - Bắc Giang','12h00 09/06/2023','100 000','Xả',removeBtn(0)],
+        ['Công ty cổ phần đăng kiểm Bắc Kạn - 9701D','12h00 09/06/2023','567 000','Nạp',removeBtn(0)],
+        ['Trung Tâm đăng kiểm xe cơ giới 8802D - Vĩnh Phúc','23h59 09/06/2023','20 000 000','Xả',removeBtn(0)]
     ]
-    const flexArr = [3,2,2,1]
+    const flexArr = [4,4,3,2,2]
 
     return (
         <View className='bg-bg_color h-full flex justify-between'>
             <View className='flex justify-between mb-4'>
                 <StatusBar />
-                <Header navigation={navigation} title='LỊCH SỬ ĐĂNG KIỂM'/>
+                <Header navigation={navigation} title='LỊCH SỬ NẠP/XẢ'/>
 
                 <View className='flex flex-row items-center mx-auto mt-4'>
                     <Pressable 
@@ -61,7 +61,7 @@ const Registry = ({ navigation }) => {
                         className='bg-white rounded-l-lg flex flex-row justify-between items-center space-x-8 py-3.5 px-4 w-3/5' style={style.shadow}
                     >
                         <Text className='text-text_color font-medium'>
-                            {datePicker ? datePicker: 'Thời gian đăng kiểm'}
+                            {datePicker ? datePicker: 'Ngày nạp/xả nhiên liệu'}
                         </Text>
                         <Icon name="calendar" size={20} color='#B0B0B0'></Icon>
                         <DateTimePickerModal
@@ -72,7 +72,6 @@ const Registry = ({ navigation }) => {
                         />
                     </Pressable>
                     <Pressable 
-                        onPress={() => pickOptions()}
                         className='bg-btn_color py-3.5 px-4 rounded-r-lg' 
                         style={style.shadow}
                     >
@@ -101,9 +100,9 @@ const Registry = ({ navigation }) => {
                         </Table>
                     </ScrollView>
                 </View>
-
+                
                 <Pressable 
-                    onPress={() => navigation.navigate('FormRegistry')} 
+                    onPress={() => navigation.navigate('FormFuel')} 
                     className='flex flex-row items-center ml-auto mr-10 bg-sub_bg_color py-3 px-5 my-3 rounded-xl space-x-4' 
                     style={style.shadow}
                 >
@@ -111,9 +110,10 @@ const Registry = ({ navigation }) => {
                     <Text className='text-bg_color text-lg font-semibold'>Tạo mới</Text>
                 </Pressable>
             </View>
-            <Footer navigation={navigation} id={2}/>
+
+            <Footer navigation={navigation} id={1}/>
         </View>
     )
 }
 
-export default Registry
+export default HistoryFuel;

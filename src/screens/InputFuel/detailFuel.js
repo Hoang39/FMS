@@ -6,9 +6,6 @@ import DateTimePickerModal from "react-native-modal-datetime-picker";
 import * as ImagePicker from 'expo-image-picker'
 import Swiper from 'react-native-swiper';
 import Icon from 'react-native-vector-icons/FontAwesome5';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-
-import { getVehiclesList } from '../../api/Fuel/fuel';
 
 import Header from '../../components/header/header'
 import Footer from '../../components/footer/footer'
@@ -43,7 +40,7 @@ const formatTime = (date) => {
     return [hour, minute].join(':');
 }
 
-const FormFuel = ({ navigation }) => {
+const DetailFuel = ({ navigation, id }) => {
     const [hasGalleryPermission, setHasGalleryPermission] = useState(null);
     const [hasCameraPermission, setHasCameraPermission] = useState(null);
     const { showActionSheetWithOptions } = useActionSheet();
@@ -57,7 +54,18 @@ const FormFuel = ({ navigation }) => {
 
     const [openPlate, setOpenPlate] = useState(false);
     const [valuePlate, setValuePlate] = useState('');
-    const [itemsPlate, setItemsPlate] = useState([]);
+    const [itemsPlate, setItemsPlate] = useState([
+        {label: '59B-12340', value: '59B-12340'},
+        {label: '59B-12341', value: '59B-12341'},
+        {label: '59B-12342', value: '59B-12342'},
+        {label: '59B-12343', value: '59B-12343'},
+        {label: '59B-12344', value: '59B-12344'},
+        {label: '59B-12345', value: '59B-12345'},
+        {label: '59B-12346', value: '59B-12346'},
+        {label: '59B-12347', value: '59B-12347'},
+        {label: '59B-12348', value: '59B-12348'},
+        {label: '59B-12349', value: '59B-12349'},
+    ]);
 
     const [openMode, setOpenMode] = useState(false);
     const [valueMode, setValueMode] = useState('');
@@ -100,11 +108,6 @@ const FormFuel = ({ navigation }) => {
             setHasGalleryPermission(galleryStatus.status === 'granted')
             const cameraStatus = await ImagePicker.requestCameraPermissionsAsync();
             setHasCameraPermission(cameraStatus.status === 'granted')
-
-            const token = await AsyncStorage.getItem('token')
-            console.log(token)
-            const itemsPlateList = getVehiclesList()
-            setItemsPlate(itemsPlateList.map(item => ({value: item.vehicle_id, label: item.name})))
         })();
     }, []);
 
@@ -156,7 +159,7 @@ const FormFuel = ({ navigation }) => {
                 <Header navigation={navigation} title='NẠP/XẢ NHIÊN LIỆU'/>
 
                 <View className='h-[75%]'>
-                    <ScrollView nestedScrollEnabled={true} style={{flex: 1}} contentContainerStyle={{flexGrow:1}}>
+                    <ScrollView>
                         <View className='flex flex-row mt-2 mx-8 justify-between space-x-4' style={{ zIndex: 100 }}>
                             <View className='flex-1'>
                                 <Text className='px-2 py-2 font-medium'>Chế độ <Text className='text-[#FF0000]'>*</Text></Text>
@@ -169,7 +172,7 @@ const FormFuel = ({ navigation }) => {
                                     setItems={setItemsMode}
                                     placeholder='Chế độ nạp/xả'
                                     placeholderStyle={{color:'#B0B0B0'}}
-                                    dropDownContainerStyle={{ borderColor:'white', position: 'relative', top: 0 }}
+                                    dropDownContainerStyle={{ borderColor:'white' }}
                                     className='border-white'
                                     style={style.shadow}
                                 />
@@ -188,7 +191,7 @@ const FormFuel = ({ navigation }) => {
                                     setItems={setItemsPlate}
                                     placeholder='Biển số xe'
                                     placeholderStyle={{color:'#B0B0B0'}}
-                                    dropDownContainerStyle={{ borderColor:'white', position: 'relative', top: 0 }}
+                                    dropDownContainerStyle={{ borderColor:'white' }}
                                     className='border-white'
                                     style={style.shadow}
                                 />
@@ -235,23 +238,25 @@ const FormFuel = ({ navigation }) => {
                             </View>
                         </View>
 
-                        <View className='mt-2 mx-8' style={{ zIndex: 90 }}>
-                            <Text className='px-2 py-2 font-medium'>CHXD <Text className='text-[#FF0000]'>*</Text></Text>
-                            <DropDownPicker
-                                searchable={true}
-                                searchPlaceholder="Tìm kiếm"
-                                open={openStore}
-                                value={valueStore}
-                                items={itemsStore}
-                                setOpen={setOpenStore}
-                                setValue={setValueStore}
-                                setItems={setItemsStore}
-                                placeholder='Cửa hàng xăng dầu'
-                                placeholderStyle={{color:'#B0B0B0'}}
-                                dropDownContainerStyle={{ borderColor:'white', position: 'relative', top: 0 }}
-                                className='border-white'
-                                style={style.shadow}
-                            />
+                        <View className='flex flex-row mt-2 mx-8 justify-between space-x-4' style={{ zIndex: 90 }}>
+                            <View className='flex-1'>
+                                <Text className='px-2 py-2 font-medium'>CHXD <Text className='text-[#FF0000]'>*</Text></Text>
+                                <DropDownPicker
+                                    searchable={true}
+                                    searchPlaceholder="Tìm kiếm"
+                                    open={openStore}
+                                    value={valueStore}
+                                    items={itemsStore}
+                                    setOpen={setOpenStore}
+                                    setValue={setValueStore}
+                                    setItems={setItemsStore}
+                                    placeholder='Cửa hàng xăng dầu'
+                                    placeholderStyle={{color:'#B0B0B0'}}
+                                    dropDownContainerStyle={{ borderColor:'white' }}
+                                    className='border-white'
+                                    style={style.shadow}
+                                />
+                            </View>
                         </View>
 
                         <View className='flex flex-row mt-2 mx-8 justify-between space-x-4' style={{ zIndex: 80 }}>
@@ -268,7 +273,7 @@ const FormFuel = ({ navigation }) => {
                                     setItems={setItemsFuel}
                                     placeholder='Nhập loại dầu'
                                     placeholderStyle={{color:'#B0B0B0'}}
-                                    dropDownContainerStyle={{ borderColor:'white', position: 'relative', top: 0 }}
+                                    dropDownContainerStyle={{ borderColor:'white' }}
                                     className='border-white'
                                     style={style.shadow}
                                 />
@@ -356,4 +361,4 @@ const FormFuel = ({ navigation }) => {
     )
 }
 
-export default FormFuel
+export default DetailFuel
