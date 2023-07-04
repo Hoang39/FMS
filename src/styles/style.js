@@ -12,5 +12,21 @@ export default StyleSheet.create({
 
     elevation: 7,
     zIndex: 50
-  }
+  },
+
+  text: { 
+    textAlign: 'center', 
+    fontSize: 11,
+    paddingHorizontal: 6,
+    paddingVertical: 20,
+  },
+
+  textTitle: { 
+    textAlign: 'center', 
+    fontSize: 12,
+    paddingVertical: 10,
+    fontWeight: 700,
+    borderBottomWidth: 1,
+  },
+
 })
