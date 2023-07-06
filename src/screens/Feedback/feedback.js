@@ -11,11 +11,11 @@ import logo from '../../assets/images/logo.png'
 const Feedback = ({ navigation }) => {
     return (
         <View className='bg-bg_color h-full flex justify-between'>
-            <View className='flex justify-between mb-4'>
+            <View className='flex justify-between'>
                 <StatusBar />
                 <Header navigation={navigation} title='PHẢN HỒI THÔNG TIN'/>
                 <View>
-                    <View className='bg-white p-8 rounded-full mx-auto my-8'>
+                    <View className='bg-white p-8 rounded-full mx-auto my-4'>
                         <Image source={logo}></Image>
                     </View>
                     <Text className='text-[#333] text-3xl font-semibold mx-auto'>

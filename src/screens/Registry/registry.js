@@ -104,7 +104,7 @@ const Registry = ({ navigation }) => {
 
                 <Pressable 
                     onPress={() => navigation.navigate('FormRegistry')} 
-                    className='flex flex-row items-center ml-auto mr-10 bg-sub_bg_color py-3 px-5 my-3 rounded-xl space-x-4' 
+                    className='flex flex-row items-center ml-auto mr-10 bg-sub_bg_color py-3 px-5 rounded-xl space-x-4' 
                     style={style.shadow}
                 >
                     <Icon name="plus" size={22} color='#259EE2' ></Icon>

@@ -291,10 +291,7 @@ const FormToll = ({ navigation }) => {
                             </Pressable>
                         </View>
 
-                        <Pressable 
-                            onPress={() => pickOptions()}
-                            className='mt-4 mx-8 h-80 border-white border-2 rounded-xl p-3'
-                        >
+                        <View className='mt-4 mx-8 h-80 border-white border-2 rounded-xl p-3'>
                             <Swiper>
                             {
                                 imagePicker.length
@@ -310,7 +307,7 @@ const FormToll = ({ navigation }) => {
                                 </View>
                             }
                             </Swiper>
-                        </Pressable>
+                        </View>
 
                         <View className='flex flex-row my-6 mx-8 space-x-4'>
                             <Checkbox
@@ -324,7 +321,7 @@ const FormToll = ({ navigation }) => {
                 </View>
                 <Pressable 
                     onPress={() => navigation.navigate('Toll')} 
-                    className='flex flex-row justify-between items-center w-[40%] mx-auto bg-btn_color py-2 px-11 my-3 rounded-2xl' 
+                    className='flex flex-row justify-between items-center w-[40%] mx-auto bg-btn_color py-2 px-11 rounded-2xl' 
                     style={style.shadow}
                 >
                     <Icon name="save" size={24} color='#CCC' solid></Icon>

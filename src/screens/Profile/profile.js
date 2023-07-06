@@ -29,7 +29,7 @@ const Profile = ({ navigation }) => {
                     </View>
                 </View>
 
-                <View className='mt-20 space-y-8'>
+                <View className='mt-8 space-y-8'>
                     <Pressable 
                         onPress={() => setModalVisible(!modalVisible)}
                         className='bg-sub_bg_color flex flex-row items-center justify-between py-4 px-6 rounded-xl mx-8' 

@@ -102,8 +102,7 @@ const FormFuel = ({ navigation }) => {
             setHasCameraPermission(cameraStatus.status === 'granted')
 
             const token = await AsyncStorage.getItem('token')
-            console.log(token)
-            const itemsPlateList = getVehiclesList()
+            const itemsPlateList = getVehiclesList(token)
             setItemsPlate(itemsPlateList.map(item => ({value: item.vehicle_id, label: item.name})))
         })();
     }, []);
@@ -319,10 +318,7 @@ const FormFuel = ({ navigation }) => {
                             </Pressable>
                         </View>
 
-                        <Pressable 
-                            onPress={() => pickOptions()}
-                            className='mt-4 mx-8 h-80 border-white border-2 rounded-xl p-3'
-                        >
+                        <View className='mt-4 mx-8 h-80 border-white border-2 rounded-xl p-3'>
                             <Swiper>
                             {
                                 imagePicker.length
@@ -338,12 +334,12 @@ const FormFuel = ({ navigation }) => {
                                 </View>
                             }
                             </Swiper>
-                        </Pressable>
+                        </View>
                     </ScrollView>
                 </View>
                 <Pressable 
                     onPress={() => navigation.navigate('HistoryFuel')} 
-                    className='flex flex-row justify-between items-center w-[40%] mx-auto bg-btn_color py-2 px-11 my-3 rounded-2xl' 
+                    className='flex flex-row justify-between items-center w-[40%] mx-auto bg-btn_color py-2 px-11 rounded-2xl' 
                     style={style.shadow}
                 >
                     <Icon name="save" size={24} color='#CCC' solid></Icon>

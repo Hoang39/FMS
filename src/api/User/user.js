@@ -13,3 +13,16 @@ export const loginAction = async(formValue) => {
         return error.response.data;
     }
 }
+
+export const loginInfo = async(token) => {
+    try {
+        const res = await axios({
+            method: "get",
+            url: 'http://testv4.adagps.com/index.php/api/AuthController/getInfoUserLogin',
+            headers: { Authorization: `bearer ${token}` },
+        });
+        return res.data;
+    } catch(error) {
+        return error.response.data;
+    }
+}
