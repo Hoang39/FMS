@@ -8,13 +8,14 @@ import Swiper from 'react-native-swiper';
 import Icon from 'react-native-vector-icons/FontAwesome5';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-import { getVehiclesList } from '../../api/Fuel/fuel';
+import { getFuelTypeList, getLocationList, getVehiclesList } from '../../api/Fuel/fuel';
 
 import Header from '../../components/header/header'
 import Footer from '../../components/footer/footer'
 import style from '../../styles/style'
 
 import blankImg from '../../assets/images/blankImg.png'
+import { SafeAreaView } from 'react-native';
 
 const formatDate = (date) => {
     var d = new Date(date),
@@ -68,31 +69,11 @@ const FormFuel = ({ navigation }) => {
 
     const [openStore, setOpenStore] = useState(false);
     const [valueStore, setValueStore] = useState('');
-    const [itemsStore, setItemsStore] = useState([
-        {value: '1', label: 'Trạm xăng A.T Petrol - CHXD Gia Định'},
-        {value: '2', label: 'Trạm xăng A.T Petrol - CHXD Gia Định'},
-        {value: '3', label: 'Trạm xăng A.T Petrol - CHXD Gia Định'},
-        {value: '4', label: 'Trạm xăng A.T Petrol - CHXD Gia Định'},
-        {value: '5', label: 'Trạm xăng A.T Petrol - CHXD Gia Định'},
-        {value: '6', label: 'Trạm xăng A.T Petrol - CHXD Gia Định'},
-        {value: '7', label: 'Trạm xăng A.T Petrol - CHXD Gia Định'},
-        {value: '8', label: 'Trạm xăng A.T Petrol - CHXD Gia Định'},
-        {value: '9', label: 'Trạm xăng A.T Petrol - CHXD Gia Định'},
-    ]);
+    const [itemsStore, setItemsStore] = useState([]);
 
     const [openFuel, setOpenFuel] = useState(false);
     const [valueFuel, setValueFuel] = useState('');
-    const [itemsFuel, setItemsFuel] = useState([
-        {value: '1', label: 'Castrol CRB 20W-50 CF-4'},
-        {value: '2', label: 'Castrol CRB 20W-50 CF-4'},
-        {value: '3', label: 'Castrol CRB 20W-50 CF-4'},
-        {value: '4', label: 'Castrol CRB 20W-50 CF-4'},
-        {value: '5', label: 'Castrol CRB 20W-50 CF-4'},
-        {value: '6', label: 'Castrol CRB 20W-50 CF-4'},
-        {value: '7', label: 'Castrol CRB 20W-50 CF-4'},
-        {value: '8', label: 'Castrol CRB 20W-50 CF-4'},
-        {value: '9', label: 'Castrol CRB 20W-50 CF-4'},
-    ]);
+    const [itemsFuel, setItemsFuel] = useState([]);
 
     useEffect(() => {
         (async () => {
@@ -102,12 +83,17 @@ const FormFuel = ({ navigation }) => {
             setHasCameraPermission(cameraStatus.status === 'granted')
 
             const token = await AsyncStorage.getItem('token')
-            const itemsPlateList = getVehiclesList(token)
-            setItemsPlate(itemsPlateList.map(item => ({value: item.vehicle_id, label: item.name})))
+            const itemsPlateList = await getVehiclesList(token)
+            const fuelTypeList = await getFuelTypeList(token)
+            const locationList = await getLocationList(token)
+
+            setItemsPlate(itemsPlateList.map(item => ({value: item.vehicle_id, label: item.plate})))
+            setItemsFuel(fuelTypeList.map(item => ({value: item.fuel_type_id, label: item.fuel_type_name})))
+            setItemsStore(locationList.map(item => ({value: item.location_id, label: item.location_name})))
         })();
     }, []);
 
-    const pickImage = async () => {
+    const pickImage = async () => { 
         let result = await ImagePicker.launchImageLibraryAsync({
             mediaTypes: ImagePicker.MediaTypeOptions.Images,
             allowsMultipleSelection: true,
@@ -150,13 +136,12 @@ const FormFuel = ({ navigation }) => {
     
     return ( 
         <View className='bg-bg_color h-full flex justify-between'>
-            <View className='flex justify-between mb-4'>
-                <StatusBar />
+            <SafeAreaView className='flex justify-between mb-4'>
                 <Header navigation={navigation} title='NẠP/XẢ NHIÊN LIỆU'/>
 
                 <View className='h-[75%]'>
                     <ScrollView nestedScrollEnabled={true} style={{flex: 1}} contentContainerStyle={{flexGrow:1}}>
-                        <View className='flex flex-row mt-2 mx-8 justify-between space-x-4' style={{ zIndex: 100 }}>
+                        <View className='flex flex-row mx-8 justify-between space-x-4' style={{ zIndex: 100 }}>
                             <View className='flex-1'>
                                 <Text className='px-2 py-2 font-medium'>Chế độ <Text className='text-[#FF0000]'>*</Text></Text>
                                 <DropDownPicker
@@ -206,6 +191,7 @@ const FormFuel = ({ navigation }) => {
                                     </Text>
                                     <Icon name="clock" size={20}></Icon>
                                     <DateTimePickerModal
+                                        isDarkModeEnabled={true}
                                         isVisible={isTimePickerVisible}
                                         mode="time"
                                         onConfirm={(time) => {setTimePicker(formatTime(time)); setTimePickerVisibility(false)}}
@@ -225,6 +211,7 @@ const FormFuel = ({ navigation }) => {
                                     </Text>
                                     <Icon name="calendar" size={20}></Icon>
                                     <DateTimePickerModal
+                                        isDarkModeEnabled={true}
                                         isVisible={isDatePickerVisible}
                                         mode="date"
                                         onConfirm={(date) => {setDatePicker(formatDate(date)); setDatePickerVisibility(false)}}
@@ -345,7 +332,7 @@ const FormFuel = ({ navigation }) => {
                     <Icon name="save" size={24} color='#CCC' solid></Icon>
                     <Text className='text-[#CCC] text-lg font-semibold'>LƯU</Text>
                 </Pressable>
-            </View>
+            </SafeAreaView>
 
             <Footer navigation={navigation} id={1}/>
         </View>

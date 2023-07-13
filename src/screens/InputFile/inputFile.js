@@ -1,4 +1,4 @@
-import { View, Image, Pressable, Text } from 'react-native'
+import { View, Image, Pressable, Text, SafeAreaView } from 'react-native'
 import Header from "../../components/header/header"
 import Footer from '../../components/footer/footer'
 
@@ -8,13 +8,13 @@ import style from '../../styles/style'
 const InputFile = ({ navigation }) => {
     return (
         <View className='bg-bg_color h-full flex justify-between'>
-            <View>
+            <SafeAreaView>
                 <Header navigation={navigation}/>
 
                 <Image source={avatar} className='mx-auto my-8'></Image>
                 <Pressable 
                     onPress={() => navigation.navigate('Registry')} 
-                    className='bg-sub_bg_color py-3 mt-8 mx-auto rounded-3xl w-[70%]' style='elevation: 5'
+                    className='bg-sub_bg_color py-3 mt-8 mx-auto rounded-3xl w-[70%]' style={style.shadow}
                 >
                     <Text className='text-bg_color text-2xl font-semibold mx-auto'>
                         Đăng kiểm
@@ -28,7 +28,7 @@ const InputFile = ({ navigation }) => {
                         Phí đường bộ
                     </Text>
                 </Pressable>
-            </View>
+            </SafeAreaView>
             <Footer navigation={navigation} id={2}/>
         </View>
     )

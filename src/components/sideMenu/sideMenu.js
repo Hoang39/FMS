@@ -15,7 +15,7 @@ const SideMenu = ({ navigation }) => {
     }
 
     return (
-        <View className='flex w-3/5 h-screen bg-white border-2 border-blue-200'>
+        <View className='flex w-3/5 h-screen bg-white border-2 border-blue-200 pt-8'>
             <View className='flex items-center'>
                 <Image source={logo} className='w-16 h-16'></Image>
                 <View className='my-2 p-2 border-2 border-[#ccc] rounded-full overflow-hidden'>

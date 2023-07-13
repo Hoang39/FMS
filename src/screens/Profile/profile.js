@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Pressable, View, Text, StatusBar, Image, Modal, TextInput } from 'react-native'
+import { Pressable, View, Text, StatusBar, Image, Modal, TextInput, SafeAreaView } from 'react-native'
 import Icon from 'react-native-vector-icons/FontAwesome5';
 import { BlurView } from 'expo-blur';
 
@@ -14,7 +14,7 @@ const Profile = ({ navigation }) => {
 
     return (
         <View className='bg-bg_color h-full flex justify-between'>
-            <View className='flex justify-between mb-4'>
+            <SafeAreaView className='flex justify-between mb-4'>
                 <StatusBar />
                 <Header navigation={navigation} title='THÔNG TIN CÁ NHÂN'/>
 
@@ -114,7 +114,7 @@ const Profile = ({ navigation }) => {
                     </View>
                 </Modal>
 
-            </View>
+            </SafeAreaView>
 
             <Footer navigation={navigation} id={0}/>
 

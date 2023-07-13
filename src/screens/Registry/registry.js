@@ -7,8 +7,9 @@ import { Table, Row } from 'react-native-table-component';
 import Header from '../../components/header/header'
 import Footer from '../../components/footer/footer'
 import style from '../../styles/style'
+import { SafeAreaView } from 'react-native';
 
-const formatDate = (date) => {
+const formatDate = (date, specChar = '-') => {
     var d = new Date(date),
     month = '' + (d.getMonth() + 1),
     day = '' + d.getDate(),
@@ -19,7 +20,15 @@ const formatDate = (date) => {
     if (day.length < 2) 
         day = '0' + day;
 
-    return [day, month, year].join('-');
+    return [day, month, year].join(specChar);
+}
+
+const getPreviousMonth = () => {
+    let currentDate = new Date();
+
+    let previousMonthYear = currentDate.getMonth() === 0 ? currentDate.getFullYear() - 1 : currentDate.getFullYear();
+    let previousMonthMonth = currentDate.getMonth() === 0 ? 11 : currentDate.getMonth() - 1;
+    return new Date(previousMonthYear, previousMonthMonth, 1);
 }
 
 const Registry = ({ navigation }) => {
@@ -51,8 +60,7 @@ const Registry = ({ navigation }) => {
 
     return (
         <View className='bg-bg_color h-full flex justify-between'>
-            <View className='flex justify-between mb-4'>
-                <StatusBar />
+            <SafeAreaView className='flex justify-between mb-4'>
                 <Header navigation={navigation} title='LỊCH SỬ ĐĂNG KIỂM'/>
 
                 <View className='flex flex-row items-center mx-auto mt-4'>
@@ -65,6 +73,8 @@ const Registry = ({ navigation }) => {
                         </Text>
                         <Icon name="calendar" size={20} color='#B0B0B0'></Icon>
                         <DateTimePickerModal
+                            minimumDate={getPreviousMonth()}
+                            maximumDate={new Date()}
                             isVisible={isDatePickerVisible}
                             mode="date"
                             onConfirm={(date) => {setDatePicker(formatDate(date)); setDatePickerVisibility(false)}}
@@ -110,7 +120,7 @@ const Registry = ({ navigation }) => {
                     <Icon name="plus" size={22} color='#259EE2' ></Icon>
                     <Text className='text-bg_color text-lg font-semibold'>Tạo mới</Text>
                 </Pressable>
-            </View>
+            </SafeAreaView>
             <Footer navigation={navigation} id={2}/>
         </View>
     )

@@ -1,5 +1,5 @@
 import { useEffect } from 'react'
-import { View, Image, Pressable, Text, StatusBar, BackHandler, Alert } from 'react-native'
+import { View, Image, Pressable, Text, StatusBar, BackHandler, Alert, SafeAreaView } from 'react-native'
 import Header from "../../components/header/header"
 import Footer from '../../components/footer/footer'
 
@@ -21,8 +21,7 @@ const InputFuel = ({ navigation }) => {
 
     return (
         <View className='bg-bg_color h-full flex justify-between'>
-            <View>
-                <StatusBar />
+            <SafeAreaView>
                 <Header navigation={navigation}/>
 
                 <Image source={avatar} className='mx-auto my-8'></Image>
@@ -34,7 +33,7 @@ const InputFuel = ({ navigation }) => {
                         Nạp/xả nhiên liệu
                     </Text>
                 </Pressable>
-            </View>
+            </SafeAreaView>
             <Footer navigation={navigation} id={1}/>
         </View>
     )

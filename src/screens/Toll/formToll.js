@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { Pressable, View, Text, StatusBar, ScrollView, TextInput, Image } from 'react-native'
+import { Pressable, View, Text, SafeAreaView, ScrollView, TextInput, Image } from 'react-native'
 import { useActionSheet } from '@expo/react-native-action-sheet';
 import DropDownPicker from 'react-native-dropdown-picker';
 import DateTimePickerModal from "react-native-modal-datetime-picker";
@@ -141,8 +141,7 @@ const FormToll = ({ navigation }) => {
     
     return ( 
         <View className='bg-bg_color h-full flex justify-between'>
-            <View className='flex justify-between mb-4'>
-                <StatusBar />
+            <SafeAreaView className='flex justify-between mb-4'>
                 <Header navigation={navigation} title='PHÍ ĐƯỜNG BỘ'/>
 
                 <View className='h-[75%]'>
@@ -252,6 +251,7 @@ const FormToll = ({ navigation }) => {
                                     </Text>
                                     <Icon name="calendar" size={20}></Icon>
                                     <DateTimePickerModal
+                                        isDarkModeEnabled={true}
                                         isVisible={isDatePickerStart}
                                         mode="date"
                                         onConfirm={(date) => {setDatePickerStart(formatDate(date)); setIsDatePickerStart(false)}}
@@ -271,6 +271,7 @@ const FormToll = ({ navigation }) => {
                                     </Text>
                                     <Icon name="calendar" size={20}></Icon>
                                     <DateTimePickerModal
+                                        isDarkModeEnabled={true}
                                         isVisible={isDatePickerEnd}
                                         mode="date"
                                         onConfirm={(date) => {setDatePickerEnd(formatDate(date)); setIsDatePickerEnd(false)}}
@@ -327,7 +328,7 @@ const FormToll = ({ navigation }) => {
                     <Icon name="save" size={24} color='#CCC' solid></Icon>
                     <Text className='text-[#CCC] text-lg font-semibold'>LƯU</Text>
                 </Pressable>
-            </View>
+            </SafeAreaView>
 
             <Footer navigation={navigation} id={2}/>
         </View>

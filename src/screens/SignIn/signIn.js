@@ -7,7 +7,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import md5 from 'md5';
 
 import logo from '../../assets/images/logo.png'
-import { loginAction } from '../../api/User/user';
+import { loginAction, loginInfo } from '../../api/User/user';
 
 const SignIn = ({ navigation }) => {
     const [formValue, setFormValue] = useState(null)

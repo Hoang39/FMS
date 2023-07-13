@@ -7,16 +7,16 @@ import { Table, Row } from 'react-native-table-component';
 import Header from '../../components/header/header'
 import Footer from '../../components/footer/footer'
 import style from '../../styles/style'
+import { SafeAreaView } from 'react-native';
 
 const Contact = ({ navigation }) => {
     return (
         <View className='bg-bg_color h-full flex justify-between'>
-            <View className='flex justify-between mb-4'>
-                <StatusBar />
+            <SafeAreaView className='flex justify-between mb-4'>
                 <Header navigation={navigation} title='LIÊN HỆ'/>
 
 
-            </View>
+            </SafeAreaView>
 
             <Footer navigation={navigation} id={0}/>
         </View>

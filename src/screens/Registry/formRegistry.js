@@ -13,6 +13,7 @@ import Footer from '../../components/footer/footer'
 import style from '../../styles/style'
 
 import blankImg from '../../assets/images/blankImg.png'
+import { SafeAreaView } from 'react-native';
 
 const formatDate = (date) => {
     var d = new Date(date),
@@ -117,8 +118,7 @@ const FormRegistry = ({ navigation }) => {
     
     return ( 
         <View className='bg-bg_color h-full flex justify-between'>
-            <View className='flex justify-between mb-4'>
-                <StatusBar />
+            <SafeAreaView className='flex justify-between mb-4'>
                 <Header navigation={navigation} title='ĐĂNG KIỂM'/>
 
                 <View className='h-[75%]'>
@@ -193,6 +193,7 @@ const FormRegistry = ({ navigation }) => {
                                     </Text>
                                     <Icon name="calendar" size={20}></Icon>
                                     <DateTimePickerModal
+                                        isDarkModeEnabled={true}
                                         isVisible={isDatePickerStart}
                                         mode="date"
                                         onConfirm={(date) => {setDatePickerStart(formatDate(date)); setIsDatePickerStart(false)}}
@@ -212,6 +213,7 @@ const FormRegistry = ({ navigation }) => {
                                     </Text>
                                     <Icon name="calendar" size={20}></Icon>
                                     <DateTimePickerModal
+                                        isDarkModeEnabled={true}
                                         isVisible={isDatePickerEnd}
                                         mode="date"
                                         onConfirm={(date) => {setDatePickerEnd(formatDate(date)); setIsDatePickerEnd(false)}}
@@ -268,7 +270,7 @@ const FormRegistry = ({ navigation }) => {
                     <Icon name="save" size={24} color='#CCC' solid></Icon>
                     <Text className='text-[#CCC] text-lg font-semibold'>LƯU</Text>
                 </Pressable>
-            </View>
+            </SafeAreaView>
 
             <Footer navigation={navigation} id={2}/>
         </View>

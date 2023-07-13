@@ -154,8 +154,7 @@ const DetailFuel = ({ navigation, id }) => {
     
     return ( 
         <View className='bg-bg_color h-full flex justify-between'>
-            <View className='flex justify-between mb-4'>
-                <StatusBar />
+            <SafeAreaView className='flex justify-between mb-4'>
                 <Header navigation={navigation} title='NẠP/XẢ NHIÊN LIỆU'/>
 
                 <View className='h-[75%]'>
@@ -210,6 +209,7 @@ const DetailFuel = ({ navigation, id }) => {
                                     </Text>
                                     <Icon name="clock" size={20}></Icon>
                                     <DateTimePickerModal
+                                        isDarkModeEnabled={true}
                                         isVisible={isTimePickerVisible}
                                         mode="time"
                                         onConfirm={(time) => {setTimePicker(formatTime(time)); setTimePickerVisibility(false)}}
@@ -229,6 +229,7 @@ const DetailFuel = ({ navigation, id }) => {
                                     </Text>
                                     <Icon name="calendar" size={20}></Icon>
                                     <DateTimePickerModal
+                                        isDarkModeEnabled={true}
                                         isVisible={isDatePickerVisible}
                                         mode="date"
                                         onConfirm={(date) => {setDatePicker(formatDate(date)); setDatePickerVisibility(false)}}
@@ -354,7 +355,7 @@ const DetailFuel = ({ navigation, id }) => {
                     <Icon name="save" size={24} color='#CCC' solid></Icon>
                     <Text className='text-[#CCC] text-lg font-semibold'>LƯU</Text>
                 </Pressable>
-            </View>
+            </SafeAreaView>
 
             <Footer navigation={navigation} id={1}/>
         </View>

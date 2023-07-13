@@ -1,3 +1,4 @@
+import { SafeAreaView } from 'react-native';
 import { Pressable, View, Text } from 'react-native'
 import Icon from 'react-native-vector-icons/FontAwesome5';
 
@@ -24,7 +25,7 @@ const tab = [
 
 const Footer = ({navigation, id}) => {
     return (
-        <View className='flex flex-row justify-around items-center bg-[#CECECE] py-1'>
+        <SafeAreaView className='flex flex-row justify-around items-center bg-[#CECECE]'>
         {
             tab.map((item) => (
                 <Pressable 
@@ -39,7 +40,7 @@ const Footer = ({navigation, id}) => {
                 </Pressable> 
             ))
         }
-        </View>
+        </SafeAreaView>
     )
 }
 
