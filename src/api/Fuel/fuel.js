@@ -47,22 +47,54 @@ export const getLocationList = async (token) => {
   }
 };
 
-export const getActionList = async(token, dateStart, dateEnd) => {
+export const getActionList = async(token, formDate) => {
   try {
     const res = await axios({
       method: "post",
       url: `${testv4_api_url}/api/FuelExtendedChangeController/searchAction`,
-      data: {
-        from_date: dateStart,
-        to_date: dateEnd
-      },
+      data: formDate,
       headers: {
         Authorization: `Bearer ${token}`,
-        "Content-Type": "multipart/form-data",
+        "Content-Type": "multipart/form-data"
       },
     });
-    console.log(JSON.parse(res.data.trim()).data)
-    //return JSON.parse(res.data.trim()).data
+    return JSON.parse(res.data.trim()).data
+  } catch(error) {
+    return 'error '+error;
+  }
+};
+
+export const insertFuelChange = async(token, formFuel) => {
+  try {
+    const res = await axios({
+      method: "post",
+      url: `${testv4_api_url}/api/FuelExtendedChangeController/insertFuelChange`,
+      data: formFuel,
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "multipart/form-data"
+      },
+    });
+    return JSON.parse(res.data.trim())
+  } catch(error) {
+    return 'error '+error;
+  }
+};
+
+export const uploadTmpFileFuel = async(token, file_attach) => {
+  console.log(file_attach)
+  try {
+    const res = await axios({
+      method: "post",
+      url: `${testv4_api_url}/api/FuelExtendedChangeController/uploadTmpFileFuel`,
+      data: file_attach,
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "multipart/form-data"
+      },
+    });
+    console.log(res)
+    // return JSON.parse(res.data.trim())
   } catch(error) {
     return 'error '+error;
   }

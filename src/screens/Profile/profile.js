@@ -1,16 +1,27 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Pressable, View, Text, StatusBar, Image, Modal, TextInput, SafeAreaView } from 'react-native'
 import Icon from 'react-native-vector-icons/FontAwesome5';
 import { BlurView } from 'expo-blur';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import Header from '../../components/header/header'
 import Footer from '../../components/footer/footer'
 import style from '../../styles/style'
 
 import avatar from '../../assets/images/avatar.png'
+import { loginInfo } from '../../api/User/user';
 
 const Profile = ({ navigation }) => {
     const [modalVisible, setModalVisible] = useState(false)
+    const [user, setUser] = useState(null)
+    
+    useEffect(() => {
+        (async () => {
+            const token = await AsyncStorage.getItem('token');
+            const userInfo = await loginInfo(token);
+            setUser(userInfo);
+        })()
+    },[])
 
     return (
         <View className='bg-bg_color h-full flex justify-between'>
@@ -23,9 +34,9 @@ const Profile = ({ navigation }) => {
                         <Image source={avatar} className='w-40 h-40'></Image>
                     </View>
                     <View className='space-y-4'>
-                        <Text className='text-white text-2xl font-semibold w-48'>Đặng Văn Tiếp</Text>
-                        <Text className='text-white text-base w-48'>abc@gmail.com</Text>
-                        <Text className='text-white text-base w-48'>0123456789</Text>
+                        <Text className='text-white text-2xl font-semibold w-[60%]'>{user && user.name}</Text>
+                        <Text className='text-white text-base w-[60%]'>{user && user.user_name}</Text>
+                        <Text className='text-white text-base w-[60%]'>{user && user.address}</Text>
                     </View>
                 </View>
 

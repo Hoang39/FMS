@@ -10,7 +10,7 @@ const InputFuel = ({ navigation }) => {
     useEffect(() => {
         const backHandler = BackHandler.addEventListener('hardwareBackPress',() => {
             Alert.alert('Thông báo', 'Bạn có muốn thoát khỏi ứng dụng không?', [
-                { text: 'Hủy', onPress: () => null, style: 'cancel'},
+                {text: 'Hủy', onPress: () => null, style: 'cancel'},
                 {text: 'Đồng ý', onPress: () => BackHandler.exitApp()},
             ]);
             return true;

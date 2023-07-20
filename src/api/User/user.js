@@ -24,9 +24,9 @@ export const loginInfo = async(token) => {
                 Authorization: `Bearer ${token}`,
             },
         });
-        return res.data;
+        return JSON.parse(res.data.trim()).data
     } catch(error) {
         console.log(error)
-        return error.response.data;
+        return [];
     }
 }

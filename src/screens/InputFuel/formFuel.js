@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { Pressable, View, Text, StatusBar, ScrollView, TextInput, Image } from 'react-native'
+import { Pressable, View, Text, ScrollView, TextInput, Image, SafeAreaView, Alert } from 'react-native'
 import { useActionSheet } from '@expo/react-native-action-sheet';
 import DropDownPicker from 'react-native-dropdown-picker';
 import DateTimePickerModal from "react-native-modal-datetime-picker";
@@ -8,16 +8,16 @@ import Swiper from 'react-native-swiper';
 import Icon from 'react-native-vector-icons/FontAwesome5';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-import { getFuelTypeList, getLocationList, getVehiclesList } from '../../api/Fuel/fuel';
+import { getFuelTypeList, getLocationList, getVehiclesList, insertFuelChange, uploadTmpFileFuel } from '../../api/Fuel/fuel';
+import { loginInfo } from '../../api/User/user';
 
 import Header from '../../components/header/header'
 import Footer from '../../components/footer/footer'
 import style from '../../styles/style'
 
 import blankImg from '../../assets/images/blankImg.png'
-import { SafeAreaView } from 'react-native';
 
-const formatDate = (date) => {
+const formatDate = (date, specChar = '-') => {
     var d = new Date(date),
     month = '' + (d.getMonth() + 1),
     day = '' + d.getDate(),
@@ -28,7 +28,7 @@ const formatDate = (date) => {
     if (day.length < 2) 
         day = '0' + day;
 
-    return [day, month, year].join('-');
+    return [day, month, year].join(specChar);
 }
 
 const formatTime = (date) => {
@@ -44,17 +44,30 @@ const formatTime = (date) => {
     return [hour, minute].join(':');
 }
 
+const getPreviousMonth = () => {
+    let currentDate = new Date();
+
+    let previousMonthYear = currentDate.getMonth() === 0 ? currentDate.getFullYear() - 1 : currentDate.getFullYear();
+    let previousMonthMonth = currentDate.getMonth() === 0 ? 11 : currentDate.getMonth() - 1;
+    return new Date(previousMonthYear, previousMonthMonth, 1);
+}
+
 const FormFuel = ({ navigation }) => {
     const [hasGalleryPermission, setHasGalleryPermission] = useState(null);
     const [hasCameraPermission, setHasCameraPermission] = useState(null);
     const { showActionSheetWithOptions } = useActionSheet();
-
+    
     const [imagePicker, setImagePicker] = useState([]);
+    const [imageUpload, setImageUpload] = useState([]);
 
     const [isDatePickerVisible, setDatePickerVisibility] = useState(false);
     const [datePicker, setDatePicker] = useState(null)
     const [isTimePickerVisible, setTimePickerVisibility] = useState(false);
     const [timePicker, setTimePicker] = useState(null)
+
+    const [vehicles, setVehicles] = useState(null)
+    const [fuels, setFuels] = useState(null)
+    const [stores, setStores] = useState(null)
 
     const [openPlate, setOpenPlate] = useState(false);
     const [valuePlate, setValuePlate] = useState('');
@@ -75,34 +88,127 @@ const FormFuel = ({ navigation }) => {
     const [valueFuel, setValueFuel] = useState('');
     const [itemsFuel, setItemsFuel] = useState([]);
 
+    const [formFuel, setFormFuel] = useState({})
+
     useEffect(() => {
         (async () => {
+            const token = await AsyncStorage.getItem('token')
+
             const galleryStatus = await ImagePicker.requestMediaLibraryPermissionsAsync();
             setHasGalleryPermission(galleryStatus.status === 'granted')
             const cameraStatus = await ImagePicker.requestCameraPermissionsAsync();
             setHasCameraPermission(cameraStatus.status === 'granted')
 
-            const token = await AsyncStorage.getItem('token')
             const itemsPlateList = await getVehiclesList(token)
             const fuelTypeList = await getFuelTypeList(token)
             const locationList = await getLocationList(token)
 
+            setVehicles(itemsPlateList)
+            setFuels(fuelTypeList)
+            setStores(locationList)
             setItemsPlate(itemsPlateList.map(item => ({value: item.vehicle_id, label: item.plate})))
             setItemsFuel(fuelTypeList.map(item => ({value: item.fuel_type_id, label: item.fuel_type_name})))
             setItemsStore(locationList.map(item => ({value: item.location_id, label: item.location_name})))
+
+            const userInfo = await loginInfo(token);
+            setFormFuel({
+                ...formFuel,
+                'driver_code': userInfo.user_name,
+                'driver_name': userInfo.name
+            })
         })();
     }, []);
+
+    useEffect(() => {
+        if (datePicker && timePicker) 
+            setFormFuel({
+                ...formFuel,
+                'trk_time': `${datePicker.replace(/-/g,'/')} ${timePicker}:00`
+            })
+    },[datePicker, timePicker])
+
+    useEffect(() => {
+        (async () => {
+            if (imagePicker.length) {
+                const token = await AsyncStorage.getItem('token')
+                const img = await uploadTmpFileFuel(token, imagePicker.slice(-1))
+                // console.log(img);
+                // setImageUpload(prev => prev.push(img))
+            }
+        })()
+    }, [imagePicker])
+
+    const handleChange = (event, name) => {
+        setFormFuel({
+            ...formFuel,
+            [name]: event.nativeEvent.text
+        })
+    }
+
+    const handleForm = (name, value) => {
+        setFormFuel({
+            ...formFuel,
+            [name]: value
+        })
+    }
+
+    const handleAdd = async () => {
+        const token = await AsyncStorage.getItem('token')
+        const res = await insertFuelChange(token, formFuel)
+
+        if (res.status) {
+            Alert.alert('Thành công', 'Bạn thêm lần nạp/xả thành công')
+            navigation.navigate('HistoryFuel');
+        }
+        else {
+            Alert.alert('Thất bại', 'Bạn cần điền đầy đủ tất cả các trường')
+        }
+    }
+
+    const handleVehicle = (item) => {
+        const vehicle = vehicles.filter((veh) => veh.vehicle_id === item)[0]
+        if (vehicle) {
+            setFormFuel({
+                ...formFuel,
+                'vehicle_id': vehicle.vehicle_id,
+                'vehicle_name': vehicle.name,
+                'imei': vehicle.imei,
+                'plate': vehicle.plate
+            })
+        }
+    }
+
+    const handleFuel = (item) => {
+        const fuel = fuels.filter((fue) => fue.fuel_type_id === item)[0]
+        if (fuel) {
+            setFormFuel({
+                ...formFuel,
+                'fuel_type_id': fuel.fuel_type_id,
+                'fuel_type_name': fuel.fuel_type_name
+            })
+        }
+    }
+
+    const handleStore = (item) => {
+        const store = stores.filter((sto) => sto.location_id === item)[0]
+        if (store) {
+            setFormFuel({
+                ...formFuel,
+                'location_id': store.location_id,
+                'location_name': store.location_name
+            })
+        }
+    }
 
     const pickImage = async () => { 
         let result = await ImagePicker.launchImageLibraryAsync({
             mediaTypes: ImagePicker.MediaTypeOptions.Images,
-            allowsMultipleSelection: true,
             aspect: [3,4],
             quality: 1,
         })
 
         if (!result.canceled)
-            setImagePicker(imagePicker.concat([result.assets[0].uri]));
+            setImagePicker(imagePicker.concat([result]));
     }
 
     const photographImage = async () => {
@@ -113,7 +219,7 @@ const FormFuel = ({ navigation }) => {
         })
 
         if (!result.canceled)
-            setImagePicker(imagePicker.concat([result.assets[0].uri]));
+            setImagePicker(imagePicker.concat([result]));
     }
 
     const pickOptions = () => {
@@ -156,6 +262,7 @@ const FormFuel = ({ navigation }) => {
                                     dropDownContainerStyle={{ borderColor:'white', position: 'relative', top: 0 }}
                                     className='border-white'
                                     style={style.shadow}
+                                    onChangeValue={item => handleForm('type', item === 'Nạp' ? 0 : 1)}
                                 />
                             </View>
 
@@ -175,6 +282,7 @@ const FormFuel = ({ navigation }) => {
                                     dropDownContainerStyle={{ borderColor:'white', position: 'relative', top: 0 }}
                                     className='border-white'
                                     style={style.shadow}
+                                    onChangeValue={item => handleVehicle(item)}
                                 />
                             </View>
                         </View>
@@ -211,6 +319,8 @@ const FormFuel = ({ navigation }) => {
                                     </Text>
                                     <Icon name="calendar" size={20}></Icon>
                                     <DateTimePickerModal
+                                        minimumDate={getPreviousMonth()}
+                                        maximumDate={new Date()}
                                         isDarkModeEnabled={true}
                                         isVisible={isDatePickerVisible}
                                         mode="date"
@@ -237,6 +347,7 @@ const FormFuel = ({ navigation }) => {
                                 dropDownContainerStyle={{ borderColor:'white', position: 'relative', top: 0 }}
                                 className='border-white'
                                 style={style.shadow}
+                                onChangeValue={item => handleStore(item)}
                             />
                         </View>
 
@@ -257,6 +368,7 @@ const FormFuel = ({ navigation }) => {
                                     dropDownContainerStyle={{ borderColor:'white', position: 'relative', top: 0 }}
                                     className='border-white'
                                     style={style.shadow}
+                                    onChangeValue={item => handleFuel(item)}
                                 />
                             </View>
                         </View>
@@ -265,6 +377,7 @@ const FormFuel = ({ navigation }) => {
                             <View className='flex-1'>
                                 <Text className='px-2 py-2 font-medium'>Số km <Text className='text-[#FF0000]'>*</Text></Text>
                                 <TextInput
+                                    onChange={(e) => handleChange(e, 'mileage_start')}
                                     className='bg-white px-2 py-3 rounded-lg'
                                     placeholder="Nhập số km"
                                     keyboardType="numeric"
@@ -274,6 +387,7 @@ const FormFuel = ({ navigation }) => {
                             <View className='flex-1'>
                                 <Text className='px-2 py-2 font-medium'>Số lít dầu <Text className='text-[#FF0000]'>*</Text></Text>
                                 <TextInput
+                                    onChange={(e) => handleChange(e, 'volume_change')}
                                     className='bg-white px-2 py-3 rounded-lg'
                                     placeholder="Nhập số lít dầu"
                                     keyboardType="numeric"
@@ -286,6 +400,7 @@ const FormFuel = ({ navigation }) => {
                             <View className='flex-1'>
                                 <Text className='px-2 py-2 font-medium'>Tổng tiền <Text className='text-[#FF0000]'>*</Text></Text>
                                 <TextInput
+                                    onChange={(e) => handleChange(e, 'money')}
                                     className='bg-white px-2 py-3 rounded-lg'
                                     placeholder="Nhập tổng tiền"
                                     keyboardType="numeric"
@@ -312,7 +427,7 @@ const FormFuel = ({ navigation }) => {
                                 ?
                                 imagePicker.map((item, index) => (
                                     <View className='border-2 border-[#b0b0b0] border-dashed' key={index}>
-                                        <Image source={{uri: item}} className='h-full w-full'></Image> 
+                                        <Image source={{uri: item.assets[0].uri}} className='h-full w-full'></Image> 
                                     </View>
                                 ))
                                 :
@@ -325,7 +440,7 @@ const FormFuel = ({ navigation }) => {
                     </ScrollView>
                 </View>
                 <Pressable 
-                    onPress={() => navigation.navigate('HistoryFuel')} 
+                    onPress={handleAdd} 
                     className='flex flex-row justify-between items-center w-[40%] mx-auto bg-btn_color py-2 px-11 rounded-2xl' 
                     style={style.shadow}
                 >

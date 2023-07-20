@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { View, Text } from "react-native";
+import { View, Text, LogBox } from "react-native";
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { ActionSheetProvider } from '@expo/react-native-action-sheet';
@@ -22,6 +22,8 @@ import Feedback from "./src/screens/Feedback/feedback";
 const Stack = createNativeStackNavigator();
 
 export default function App() {
+  LogBox.ignoreLogs(['Invalid prop `textStyle` of type `array` supplied to `Cell`, expected `object`']);
+
   const [isLoading, setIsLoading] = useState(true)
   const [isLoggedIn, setIsLoggedIn] = useState(false)
 

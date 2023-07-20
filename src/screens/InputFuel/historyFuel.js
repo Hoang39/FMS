@@ -1,5 +1,6 @@
-import { useEffect, useState } from 'react'
-import { Pressable, View, Text, SafeAreaView, ScrollView } from 'react-native'
+import { useEffect, useState, useLayoutEffect} from 'react';
+import { useIsFocused } from '@react-navigation/native';
+import { ActivityIndicator, Pressable, View, Text, SafeAreaView, ScrollView } from 'react-native'
 import DateTimePickerModal from "react-native-modal-datetime-picker";
 import Icon from 'react-native-vector-icons/FontAwesome5';
 import { Table, Row } from 'react-native-table-component';
@@ -42,33 +43,29 @@ const HistoryFuel = ({ navigation }) => {
             <Text className='text-[#ff0000] text-xs'>Xóa</Text>
         </Pressable>
     )
-    const tableHead = ['Cơ sở xăng dầu','Thời gian nạp','Tổng tiền','Chế độ','']
-    const tableData = [
-        ['Trung Tâm đăng kiểm xe cơ giới 9904D - Bắc Ninh','12h00 09/06/2023','1 000 000','Nạp',removeBtn(0)],
-        ['Trung Tâm đăng kiểm xe cơ giới 9801S - Bắc Giang','12h00 09/06/2023','100 000','Xả',removeBtn(0)],
-        ['Công ty cổ phần đăng kiểm Bắc Kạn - 9701D','12h00 09/06/2023','567 000','Nạp',removeBtn(0)],
-        ['Trung Tâm đăng kiểm xe cơ giới 8802D - Vĩnh Phúc','23h59 09/06/2023','20 000 000','Xả',removeBtn(0)],
-        ['Trung Tâm đăng kiểm xe cơ giới 9904D - Bắc Ninh','12h00 09/06/2023','1 000 000','Nạp',removeBtn(0)],
-        ['Trung Tâm đăng kiểm xe cơ giới 9801S - Bắc Giang','12h00 09/06/2023','100 000','Xả',removeBtn(0)],
-        ['Công ty cổ phần đăng kiểm Bắc Kạn - 9701D','12h00 09/06/2023','567 000','Nạp',removeBtn(0)],
-        ['Trung Tâm đăng kiểm xe cơ giới 8802D - Vĩnh Phúc','23h59 09/06/2023','20 000 000','Xả',removeBtn(0)],
-        ['Trung Tâm đăng kiểm xe cơ giới 9904D - Bắc Ninh','12h00 09/06/2023','1 000 000','Nạp',removeBtn(0)],
-        ['Trung Tâm đăng kiểm xe cơ giới 9801S - Bắc Giang','12h00 09/06/2023','100 000','Xả',removeBtn(0)],
-        ['Công ty cổ phần đăng kiểm Bắc Kạn - 9701D','12h00 09/06/2023','567 000','Nạp',removeBtn(0)],
-        ['Trung Tâm đăng kiểm xe cơ giới 8802D - Vĩnh Phúc','23h59 09/06/2023','20 000 000','Xả',removeBtn(0)]
-    ]
+    const tableHead = ['Cơ sở xăng dầu','Thời gian nạp/xả','Lưu lượng','Chế độ','']
     const flexArr = [4,4,3,2,2]
 
-    const [listAction, setListAction] = useState([])
+    const [tableData, setTableData] = useState([])
+    const [loading, setLoading] = useState(true)
     const [dateStart, setDateStart] = useState(formatDate(getPreviousMonth(), '/'))
     const [dateEnd, setDateEnd] = useState(formatDate(new Date(), '/'))
 
+    const isFocused = useIsFocused();
+
+    useLayoutEffect(() => {
+        setLoading(true)
+    },[isFocused])
+
     useEffect(() => {
         (async () => {
+            setLoading(true)
             const token = await AsyncStorage.getItem('token')
-            const actionList = await getActionList(token, dateStart, dateEnd)
+            const actionList = await getActionList(token, { from_date: dateStart, to_date: dateEnd })
+            setTableData(actionList.map(item => [item.location_name, item.trk_time, item.volume_change, item.type === '1'? 'Xả' : 'Nạp', removeBtn(item.id)]));
+            setLoading(false)
         })()
-    },[dateStart, dateEnd])
+    },[dateStart, dateEnd, isFocused])
 
     return (
         <View className='bg-bg_color h-full flex justify-between'>
@@ -95,6 +92,10 @@ const HistoryFuel = ({ navigation }) => {
                         />
                     </Pressable>
                     <Pressable 
+                        onPress={() => {
+                            setDateStart(datePicker)
+                            setDateEnd(datePicker)
+                        }}
                         className='bg-btn_color py-3.5 px-4 rounded-r-lg' 
                         style={style.shadow}
                     >
@@ -109,6 +110,10 @@ const HistoryFuel = ({ navigation }) => {
                     <ScrollView>
                         <Table>
                         {
+                            loading
+                            ?
+                            <ActivityIndicator size="large" />
+                            :
                             tableData.map((item, index) => (
                                 <Row 
                                     key={index}

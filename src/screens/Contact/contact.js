@@ -13,6 +13,7 @@ const Contact = ({ navigation }) => {
     return (
         <View className='bg-bg_color h-full flex justify-between'>
             <SafeAreaView className='flex justify-between mb-4'>
+                <StatusBar />
                 <Header navigation={navigation} title='LIÊN HỆ'/>
 
 

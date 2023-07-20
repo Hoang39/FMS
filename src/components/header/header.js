@@ -3,6 +3,7 @@ import { Pressable, View, Text, Animated,TouchableWithoutFeedback } from 'react-
 import Icon from 'react-native-vector-icons/FontAwesome5';
 import SideMenu from '../sideMenu/sideMenu';
 import { useFocusEffect } from '@react-navigation/native';
+import { StatusBar } from 'react-native';
 
 const Header = ({navigation, title}) => {
     const [menuSideState, setMenuSideState] = useState(false)
@@ -32,6 +33,7 @@ const Header = ({navigation, title}) => {
     if (title) 
         return (
             <View className='px-8 bg-white'>
+                <StatusBar />
                 <Pressable 
                     onPress={() => navigation.goBack()}
                     className='flex flex-row items-center space-x-6 py-3'
@@ -44,6 +46,7 @@ const Header = ({navigation, title}) => {
     else
         return (
             <>
+                <StatusBar />
                 <View className='mx-12 mt-4 flex flex-row justify-between items-center'>
                     <Pressable onPress={() => setMenuSideState(!menuSideState)}>
                         <Icon name="bars" size={24}></Icon>

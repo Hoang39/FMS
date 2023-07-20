@@ -25,7 +25,7 @@ const tab = [
 
 const Footer = ({navigation, id}) => {
     return (
-        <SafeAreaView className='flex flex-row justify-around items-center bg-[#CECECE]'>
+        <SafeAreaView className='flex flex-row justify-around items-center bg-[#CECECE] py-1'>
         {
             tab.map((item) => (
                 <Pressable 
