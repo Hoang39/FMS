@@ -67,6 +67,8 @@ const Registry = ({ navigation }) => {
                     resItem.last_register_date.slice(0, 10),
                     resItem.date_expired.slice(0, 10),
                     removeBtn(resItem.id, item),
+                    resItem.id,
+                    item
                 ]))
             }
             else {
@@ -129,14 +131,23 @@ const Registry = ({ navigation }) => {
                             <ActivityIndicator size="large" />
                             :
                             tableData.map((item, index) => (
-                                <Row 
+                                <Pressable
                                     key={index}
-                                    data={item}
-                                    flexArr={flexArr}
-                                    textStyle={style.text}
-                                    style={{...(index%2===0 && {backgroundColor: '#EFEFEF'})}}
-                                    numberOfLines={1}
-                                />
+                                    onPress={() => 
+                                        navigation.navigate('DetailRegistry', {
+                                            id: item[4],
+                                            vehicle_id: item[5]
+                                        }
+                                    )}
+                                >
+                                    <Row 
+                                        data={item.slice(0, -2)}
+                                        flexArr={flexArr}
+                                        textStyle={style.text}
+                                        style={{...(index%2===0 && {backgroundColor: '#EFEFEF'})}}
+                                        numberOfLines={1}
+                                    />
+                                </Pressable>
                             ))
                         }    
                         </Table>

@@ -57,7 +57,39 @@ export const insertRegistry = async(token, formRegistry) => {
         "Content-Type": "multipart/form-data"
       },
     });
-    console.log(JSON.parse(res.data.trim()));
+    return JSON.parse(res.data.trim())
+  } catch(error) {
+    return 'error '+error;
+  }
+};
+
+export const viewRegistry = async(token, id, vehicle_id) => {
+  try {
+    const res = await axios({
+      method: "get",
+      url: `${testv4_api_url}/api/TabHoSoGiayToController/viewDetailDangKiem?id=${id}&vehicle_id=${vehicle_id}`,
+      headers: {
+        Authorization: `Bearer ${token}`
+      },
+    });
+    return JSON.parse(res.data.trim()).data
+  } catch(error) {
+    return 'error '+error;
+  }
+};
+
+export const updateRegistry = async(token, formRegistry) => {
+  console.log(formRegistry);
+  try {
+    const res = await axios({
+      method: "post",
+      url: `${testv4_api_url}/api/TabHoSoGiayToController/updateBaoHiem`,
+      data: formRegistry,
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "multipart/form-data"
+      },
+    });
     return JSON.parse(res.data.trim())
   } catch(error) {
     return 'error '+error;

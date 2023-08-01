@@ -19,6 +19,7 @@ import Profile from "./src/screens/Profile/profile";
 import Contact from "./src/screens/Contact/contact";
 import Feedback from "./src/screens/Feedback/feedback";
 import { Alert } from "react-native";
+import DetailRegistry from "./src/screens/Registry/detailRegistry";
 
 const Stack = createNativeStackNavigator();
 
@@ -36,13 +37,6 @@ export default function App() {
       setIsLoading(false)
     })()
   },[])
-
-  const handleLogout = async () => {
-    console.log('token logout');
-    await AsyncStorage.removeItem('token')
-    Alert.alert('Thông báo', 'Hết thời gian sử dụng tài khoản')
-    // navigation.navigate('SignIn') 
-  }
   
   if (isLoading) {
     return (
@@ -73,6 +67,7 @@ export default function App() {
 
           <Stack.Screen name="Registry" component={Registry} />
           <Stack.Screen name="FormRegistry" component={FormRegistry} />
+          <Stack.Screen name="DetailRegistry" component={DetailRegistry} />
 
           <Stack.Screen name="Toll" component={Toll} />
           <Stack.Screen name="FormToll" component={FormToll} />

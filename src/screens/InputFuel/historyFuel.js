@@ -75,7 +75,7 @@ const HistoryFuel = ({ navigation }) => {
             setLoading(true)
             const token = await AsyncStorage.getItem('token')
             const actionList = await getActionList(token, { from_date: dateStart, to_date: dateEnd })
-            console.log(actionList);
+
             setTableData(actionList.map(item => [item.location_name, item.trk_time, item.volume_change, item.type === '1'? 'Xả' : 'Nạp', removeBtn(item.id, item.trk_time), item.id]));
             setLoading(false)
         })()
