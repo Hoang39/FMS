@@ -1,93 +1,120 @@
-import { useState } from 'react'
-import { Pressable, View, Text, StatusBar, ScrollView } from 'react-native'
-import DateTimePickerModal from "react-native-modal-datetime-picker";
+import { useState, useEffect, useLayoutEffect } from 'react'
+import { Pressable, View, Text, SafeAreaView, ScrollView, ActivityIndicator } from 'react-native'
+import { useIsFocused } from '@react-navigation/native';
+import DropDownPicker from 'react-native-dropdown-picker';
 import Icon from 'react-native-vector-icons/FontAwesome5';
 import { Table, Row } from 'react-native-table-component';
 
 import Header from '../../components/header/header'
 import Footer from '../../components/footer/footer'
 import style from '../../styles/style'
-import { SafeAreaView } from 'react-native';
-
-const formatDate = (date, specChar = '-') => {
-    var d = new Date(date),
-    month = '' + (d.getMonth() + 1),
-    day = '' + d.getDate(),
-    year = d.getFullYear();
-
-    if (month.length < 2) 
-        month = '0' + month;
-    if (day.length < 2) 
-        day = '0' + day;
-
-    return [day, month, year].join(specChar);
-}
-
-const getPreviousMonth = () => {
-    let currentDate = new Date();
-
-    let previousMonthYear = currentDate.getMonth() === 0 ? currentDate.getFullYear() - 1 : currentDate.getFullYear();
-    let previousMonthMonth = currentDate.getMonth() === 0 ? 11 : currentDate.getMonth() - 1;
-    return new Date(previousMonthYear, previousMonthMonth, 1);
-}
+import { getVehiclesList } from '../../api/Fuel/fuel';
+import { deleteRegistry, getRegistryCenterList, getRegistryList } from '../../api/Registry/registry';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { Alert } from 'react-native';
 
 const Registry = ({ navigation }) => {
-    const [isDatePickerVisible, setDatePickerVisibility] = useState(false);
-    const [datePicker, setDatePicker] = useState(null)
+    const removeBtn = (id, vehicle_id) => (
+        <Pressable 
+            onPress={async () => {
+                const token = await AsyncStorage.getItem('token')
+                const res = await deleteRegistry(token, id, vehicle_id)
 
-    const removeBtn = (index) => (
-        <Pressable className='flex flex-row items-center justify-between border-2 border-[#FF0000] rounded p-1 mr-1'>
+                if (res.status) {
+                    Alert.alert('Thành công', 'Bạn xóa hồ sơ thành công')
+                    setLoadingAfterRemove(!loadingAfterRemove)
+                }
+            }}
+            className='flex flex-row items-center justify-between border-2 border-[#FF0000] rounded p-1 mr-1'
+        >
             <Icon name="trash" size={10} color='#FF0000'></Icon>
             <Text className='text-[#ff0000] text-xs'>Xóa</Text>
         </Pressable>
     )
     const tableHead = ['Trung tâm đăng kiểm','Ngày đăng kiểm','Ngày hết hạn','']
-    const tableData = [
-        ['Trung Tâm đăng kiểm xe cơ giới 9904D - Bắc Ninh','09/06/2023','09/06/2023',removeBtn(0)],
-        ['Trung Tâm đăng kiểm xe cơ giới 9801S - Bắc Giang','09/06/2023','09/06/2023',removeBtn(0)],
-        ['Công ty cổ phần đăng kiểm Bắc Kạn - 9701D','09/06/2023','09/06/2023',removeBtn(0)],
-        ['Trung Tâm đăng kiểm xe cơ giới 8802D - Vĩnh Phúc','09/06/2023','09/06/2023',removeBtn(0)],
-        ['Trung Tâm đăng kiểm xe cơ giới 9904D - Bắc Ninh','09/06/2023','09/06/2023',removeBtn(0)],
-        ['Trung Tâm đăng kiểm xe cơ giới 9801S - Bắc Giang','09/06/2023','09/06/2023',removeBtn(0)],
-        ['Công ty cổ phần đăng kiểm Bắc Kạn - 9701D','09/06/2023','09/06/2023',removeBtn(0)],
-        ['Trung Tâm đăng kiểm xe cơ giới 8802D - Vĩnh Phúc','09/06/2023','09/06/2023',removeBtn(0)],
-        ['Trung Tâm đăng kiểm xe cơ giới 9904D - Bắc Ninh','09/06/2023','09/06/2023',removeBtn(0)],
-        ['Trung Tâm đăng kiểm xe cơ giới 9801S - Bắc Giang','09/06/2023','09/06/2023',removeBtn(0)],
-        ['Công ty cổ phần đăng kiểm Bắc Kạn - 9701D','09/06/2023','09/06/2023',removeBtn(0)],
-        ['Trung Tâm đăng kiểm xe cơ giới 8802D - Vĩnh Phúc','09/06/2023','09/06/2023',removeBtn(0)]
-    ]
+    const [tableData, setTableData] = useState([])
+
+    const [loading, setLoading] = useState(true)
+    const [loadingAfterRemove, setLoadingAfterRemove] = useState(true)
+
     const flexArr = [3,2,2,1]
+
+    const [openPlate, setOpenPlate] = useState(false);
+    const [valuePlate, setValuePlate] = useState('');
+    const [itemsPlate, setItemsPlate] = useState([]);
+
+    const isFocused = useIsFocused();
+
+    const getCenterName = (registryCenterList, id) => {
+        const res = registryCenterList.filter(item => item.id === id)
+        if (res.length) 
+            return res[0].name
+        return "Chưa có tên"
+    }
+
+    const handleVehicle = async (item) => {
+        if (isFocused) {
+            const token = await AsyncStorage.getItem('token')
+            const res = await getRegistryList(token, item)
+            
+            Alert.alert('Thông báo', res.mess)
+
+            if (res.status) {
+                const registryCenterList = await getRegistryCenterList(token)
+                
+                setTableData(res.data.map(resItem => [
+                    getCenterName(registryCenterList, resItem.provider_documents_id),
+                    resItem.last_register_date.slice(0, 10),
+                    resItem.date_expired.slice(0, 10),
+                    removeBtn(resItem.id, item),
+                ]))
+            }
+            else {
+                setTableData([])
+            }
+        }
+    }
+
+
+    useLayoutEffect(() => {
+        setLoading(true)
+    },[isFocused])
+
+    useEffect(() => {
+        (async () => {
+            setLoading(true)
+            const token = await AsyncStorage.getItem('token')
+
+            const itemsPlateList = await getVehiclesList(token)
+            setItemsPlate(itemsPlateList.map(item => ({value: item.vehicle_id, label: item.plate})))
+            setLoading(false)
+        })();
+    }, [isFocused, loadingAfterRemove]);
+
+    DropDownPicker.setListMode('MODAL')
 
     return (
         <View className='bg-bg_color h-full flex justify-between'>
             <SafeAreaView className='flex justify-between mb-4'>
                 <Header navigation={navigation} title='LỊCH SỬ ĐĂNG KIỂM'/>
 
-                <View className='flex flex-row items-center mx-auto mt-4'>
-                    <Pressable 
-                        onPress={() => setDatePickerVisibility(true)}
-                        className='bg-white rounded-l-lg flex flex-row justify-between items-center space-x-8 py-3.5 px-4 w-3/5' style={style.shadow}
-                    >
-                        <Text className='text-text_color font-medium'>
-                            {datePicker ? datePicker: 'Thời gian đăng kiểm'}
-                        </Text>
-                        <Icon name="calendar" size={20} color='#B0B0B0'></Icon>
-                        <DateTimePickerModal
-                            minimumDate={getPreviousMonth()}
-                            maximumDate={new Date()}
-                            isVisible={isDatePickerVisible}
-                            mode="date"
-                            onConfirm={(date) => {setDatePicker(formatDate(date)); setDatePickerVisibility(false)}}
-                            onCancel={() => setDatePickerVisibility(false)}
-                        />
-                    </Pressable>
-                    <Pressable 
-                        onPress={() => pickOptions()}
-                        className='bg-btn_color py-3.5 px-4 rounded-r-lg' 
+                <View className='mt-2 mx-8' style={{ zIndex: 100 }}>
+                    <DropDownPicker
+                        searchable={true}
+                        searchPlaceholder="Tìm kiếm"
+                        open={openPlate}
+                        value={valuePlate}
+                        items={itemsPlate}
+                        setOpen={setOpenPlate}
+                        setValue={setValuePlate}
+                        setItems={setItemsPlate}
+                        placeholder='Biển số xe'
+                        placeholderStyle={{color:'#B0B0B0'}}
+                        dropDownContainerStyle={{ borderColor:'white', position: 'relative', top: 0 }}
+                        className='border-white'
                         style={style.shadow}
-                    >
-                        <Text className='text-white font-medium'>Tìm kiếm</Text>
-                    </Pressable>
+                        onChangeValue={item => handleVehicle(item)}
+                    />
                 </View>
 
                 <View className='bg-white h-[65%]'>
@@ -97,6 +124,10 @@ const Registry = ({ navigation }) => {
                     <ScrollView>
                         <Table>
                         {
+                            loading
+                            ?
+                            <ActivityIndicator size="large" />
+                            :
                             tableData.map((item, index) => (
                                 <Row 
                                     key={index}

@@ -5070,10 +5070,20 @@
   dependencies:
     "mime-db" "1.52.0"
 
-"mime@^2.4.1", "mime@^2.4.4":
+"mime@^2.4.1":
   "integrity" "sha512-USPkMeET31rOMiarsBNIHZKLGgvKc/LrjofAnBlOttf5ajRvqiRA8QsenbcooctK6d6Ts6aqZXBA+XbkKthiQg=="
   "resolved" "https://registry.npmjs.org/mime/-/mime-2.6.0.tgz"
   "version" "2.6.0"
+
+"mime@^2.4.4":
+  "integrity" "sha512-USPkMeET31rOMiarsBNIHZKLGgvKc/LrjofAnBlOttf5ajRvqiRA8QsenbcooctK6d6Ts6aqZXBA+XbkKthiQg=="
+  "resolved" "https://registry.npmjs.org/mime/-/mime-2.6.0.tgz"
+  "version" "2.6.0"
+
+"mime@^3.0.0":
+  "integrity" "sha512-jSCU7/VB1loIWBZe14aEYHU/+1UMEHoaO7qxCOVJOw9GgH72VAWppxNcjU+x9a2k3GSIBXNKxXQFqRvvZ7vr3A=="
+  "resolved" "https://registry.npmjs.org/mime/-/mime-3.0.0.tgz"
+  "version" "3.0.0"
 
 "mime@1.6.0":
   "integrity" "sha512-x0Vn8spI+wuJ1O6S7gnbaQg8Pxh4NNHb7KSINmEWKiPE4RKOplvijn+NkmYmmRgP68mc70j2EbeTFRsrswaQeg=="
@@ -5947,6 +5957,11 @@
   "integrity" "sha512-7F6bD7B8Xsn3JllxcwHhFcsl9aHIig47+3eN4IHFNqfLhZr++3ElDrcqfMzugM+niWbaMi7bJ0kAkAL8eCpdWg=="
   "resolved" "https://registry.npmjs.org/react-native-gradle-plugin/-/react-native-gradle-plugin-0.71.18.tgz"
   "version" "0.71.18"
+
+"react-native-idle-timer@^2.2.1":
+  "integrity" "sha512-0/nr5TPUX25QB0JVC3q6a3X2jEZ3lFZPrHs4vYAw5vSW4anqtejZh2rawBRn8mk+xGyJ3JaDaf7xRnc8F0Sw9g=="
+  "resolved" "https://registry.npmjs.org/react-native-idle-timer/-/react-native-idle-timer-2.2.1.tgz"
+  "version" "2.2.1"
 
 "react-native-modal-datetime-picker@^15.0.1":
   "integrity" "sha512-FmNFeGwYWH6TCUvAr8OX75tu0FSUDxeEOxCorq2PdeIqbRx9wt7y/5oKUCfbWBWM6y+gme4TzrA0xAtufHqgGg=="

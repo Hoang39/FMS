@@ -1,6 +1,6 @@
 import { useEffect, useState, useLayoutEffect} from 'react';
 import { useIsFocused } from '@react-navigation/native';
-import { ActivityIndicator, Pressable, View, Text, SafeAreaView, ScrollView } from 'react-native'
+import { ActivityIndicator, Pressable, View, Text, SafeAreaView, ScrollView, Alert } from 'react-native'
 import DateTimePickerModal from "react-native-modal-datetime-picker";
 import Icon from 'react-native-vector-icons/FontAwesome5';
 import { Table, Row } from 'react-native-table-component';
@@ -9,7 +9,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import Header from '../../components/header/header'
 import Footer from '../../components/footer/footer'
 import style from '../../styles/style'
-import { getActionList } from '../../api/Fuel/fuel';
+import { deleteFuelChange, getActionList } from '../../api/Fuel/fuel';
 
 const formatDate = (date, specChar = '-') => {
     var d = new Date(date),
@@ -37,19 +37,32 @@ const HistoryFuel = ({ navigation }) => {
     const [isDatePickerVisible, setDatePickerVisibility] = useState(false);
     const [datePicker, setDatePicker] = useState(null)
 
-    const removeBtn = (index) => (
-        <Pressable className='flex flex-row items-center justify-between border-2 border-[#FF0000] rounded p-1 mr-1'>
-            <Icon name="trash" size={10} color='#FF0000'></Icon>
-            <Text className='text-[#ff0000] text-xs'>Xóa</Text>
-        </Pressable>
-    )
     const tableHead = ['Cơ sở xăng dầu','Thời gian nạp/xả','Lưu lượng','Chế độ','']
     const flexArr = [4,4,3,2,2]
-
+    
     const [tableData, setTableData] = useState([])
     const [loading, setLoading] = useState(true)
     const [dateStart, setDateStart] = useState(formatDate(getPreviousMonth(), '/'))
     const [dateEnd, setDateEnd] = useState(formatDate(new Date(), '/'))
+    const [loadingAfterRemove, setLoadingAfterRemove] = useState(true)
+
+    const removeBtn = (id, trk_time) => (
+        <Pressable 
+            onPress={async () => {
+                const token = await AsyncStorage.getItem('token')
+                const res = await deleteFuelChange(token, id, trk_time)
+
+                if (res.status) {
+                    Alert.alert('Thành công', 'Bạn xóa lượt nạp/xả thành công')
+                    setLoadingAfterRemove(!loadingAfterRemove)
+                }
+            }}
+            className='flex flex-row items-center justify-between border-2 border-[#FF0000] rounded p-1 mr-1'
+        >
+            <Icon name="trash" size={10} color='#FF0000'></Icon>
+            <Text className='text-[#ff0000] text-xs'>Xóa</Text>
+        </Pressable>
+    )
 
     const isFocused = useIsFocused();
 
@@ -62,10 +75,11 @@ const HistoryFuel = ({ navigation }) => {
             setLoading(true)
             const token = await AsyncStorage.getItem('token')
             const actionList = await getActionList(token, { from_date: dateStart, to_date: dateEnd })
-            setTableData(actionList.map(item => [item.location_name, item.trk_time, item.volume_change, item.type === '1'? 'Xả' : 'Nạp', removeBtn(item.id)]));
+            console.log(actionList);
+            setTableData(actionList.map(item => [item.location_name, item.trk_time, item.volume_change, item.type === '1'? 'Xả' : 'Nạp', removeBtn(item.id, item.trk_time), item.id]));
             setLoading(false)
         })()
-    },[dateStart, dateEnd, isFocused])
+    },[dateStart, dateEnd, isFocused, loadingAfterRemove])
 
     return (
         <View className='bg-bg_color h-full flex justify-between'>
@@ -115,14 +129,23 @@ const HistoryFuel = ({ navigation }) => {
                             <ActivityIndicator size="large" />
                             :
                             tableData.map((item, index) => (
-                                <Row 
+                                <Pressable
                                     key={index}
-                                    data={item}
-                                    flexArr={flexArr}
-                                    textStyle={style.text}
-                                    style={{...(index%2===0 && {backgroundColor: '#EFEFEF'})}}
-                                    numberOfLines={1}
-                                />
+                                    onPress={() => 
+                                        navigation.navigate('DetailFuel', {
+                                            id: item[5],
+                                            trk_time: item[1]
+                                        }
+                                    )}
+                                >
+                                    <Row 
+                                        data={item.slice(0, -1)}
+                                        flexArr={flexArr}
+                                        textStyle={style.text}
+                                        style={{...(index%2===0 && {backgroundColor: '#EFEFEF'})}}
+                                        numberOfLines={1}
+                                    />
+                                </Pressable>
                             ))
                         }    
                         </Table>

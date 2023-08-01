@@ -7,6 +7,7 @@ import * as ImagePicker from 'expo-image-picker'
 import Swiper from 'react-native-swiper';
 import Icon from 'react-native-vector-icons/FontAwesome5';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import mime from 'mime';
 
 import { getFuelTypeList, getLocationList, getVehiclesList, insertFuelChange, uploadTmpFileFuel } from '../../api/Fuel/fuel';
 import { loginInfo } from '../../api/User/user';
@@ -58,7 +59,6 @@ const FormFuel = ({ navigation }) => {
     const { showActionSheetWithOptions } = useActionSheet();
     
     const [imagePicker, setImagePicker] = useState([]);
-    const [imageUpload, setImageUpload] = useState([]);
 
     const [isDatePickerVisible, setDatePickerVisibility] = useState(false);
     const [datePicker, setDatePicker] = useState(null)
@@ -131,7 +131,17 @@ const FormFuel = ({ navigation }) => {
         (async () => {
             if (imagePicker.length) {
                 const token = await AsyncStorage.getItem('token')
-                const img = await uploadTmpFileFuel(token, imagePicker.slice(-1))
+                
+                let imageUri = imagePicker[imagePicker.length-1].assets[0].uri
+                
+                const formData = new FormData();
+                formData.append('file', {
+                    uri : imageUri,
+                    type: mime.getType(imageUri),
+                    name: imageUri.split("/").pop()
+                });
+                
+                // const res = await uploadTmpFileFuel(token, formData)
                 // console.log(img);
                 // setImageUpload(prev => prev.push(img))
             }
@@ -206,7 +216,7 @@ const FormFuel = ({ navigation }) => {
             aspect: [3,4],
             quality: 1,
         })
-
+  
         if (!result.canceled)
             setImagePicker(imagePicker.concat([result]));
     }
@@ -217,7 +227,7 @@ const FormFuel = ({ navigation }) => {
             aspect: [3,4],
             quality: 1,
         })
-
+      
         if (!result.canceled)
             setImagePicker(imagePicker.concat([result]));
     }

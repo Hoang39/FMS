@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { Pressable, View, Text, StatusBar, ScrollView, TextInput, Image } from 'react-native'
+import { Pressable, View, Text, ScrollView, TextInput, Image, Alert } from 'react-native'
 import { useActionSheet } from '@expo/react-native-action-sheet';
 import DropDownPicker from 'react-native-dropdown-picker';
 import DateTimePickerModal from "react-native-modal-datetime-picker";
@@ -14,8 +14,12 @@ import style from '../../styles/style'
 
 import blankImg from '../../assets/images/blankImg.png'
 import { SafeAreaView } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { getRegistryCenterList, insertRegistry } from '../../api/Registry/registry';
+import { loginInfo } from '../../api/User/user';
+import { getVehiclesList } from '../../api/Fuel/fuel';
 
-const formatDate = (date) => {
+const formatDate = (date, specChar = '-') => {
     var d = new Date(date),
     month = '' + (d.getMonth() + 1),
     day = '' + d.getDate(),
@@ -26,7 +30,22 @@ const formatDate = (date) => {
     if (day.length < 2) 
         day = '0' + day;
 
-    return [day, month, year].join('-');
+    return [day, month, year].join(specChar);
+}
+
+const getPreviousMonth = () => {
+    let currentDate = new Date();
+
+    let previousMonthYear = currentDate.getMonth() === 0 ? currentDate.getFullYear() - 1 : currentDate.getFullYear();
+    let previousMonthMonth = currentDate.getMonth() === 0 ? 11 : currentDate.getMonth() - 1;
+    return new Date(previousMonthYear, previousMonthMonth, 1);
+}
+
+const getNextDay = () => {
+    let currentDate = new Date();
+    currentDate.setDate(currentDate.getDate()+1); 
+
+    return currentDate
 }
 
 const FormRegistry = ({ navigation }) => {
@@ -44,34 +63,107 @@ const FormRegistry = ({ navigation }) => {
 
     const [openRegistration, setOpenRegistration] = useState(false);
     const [valueRegistration, setValueRegistration] = useState('');
-    const [itemsRegistration, setItemsRegistration] = useState([
-        {value: '1', label: 'Trung Tâm đăng kiểm xe cơ giới 9904D - Bắc Ninh'},
-        {value: '2', label: 'Trung Tâm đăng kiểm xe cơ giới 9802D - Bắc Giang'},
-        {value: '3', label: 'Trung tâm đăng kiểm xe cơ giới 9401V - Bạc Liêu'},
-        {value: '4', label: 'Công ty cổ phần đăng kiểm Quảng Nam - 9201D'},
-        {value: '5', label: 'Trung Tâm đăng kiểm xe cơ giới 8602D - Bình Thuận'},
-        {value: '6', label: 'Trung Tâm đăng kiểm xe cơ giới 9904D - Bắc Ninh'},
-        {value: '7', label: 'Trung Tâm đăng kiểm xe cơ giới 9802D - Bắc Giang'},
-        {value: '8', label: 'Trung tâm đăng kiểm xe cơ giới 9401V - Bạc Liêu'},
-        {value: '9', label: 'Công ty cổ phần đăng kiểm Quảng Nam - 9201D'},
-        {value: '10', label: 'Trung Tâm đăng kiểm xe cơ giới 8602D - Bình Thuận'},
-    ]);
+    const [itemsRegistration, setItemsRegistration] = useState([]);
 
     const [openDoer, setOpenDoer] = useState(false);
     const [valueDoer, setValueDoer] = useState('');
-    const [itemsDoer, setItemsDoer] = useState([
-        {value: '1', label: 'Tổng cục đường bộ'},
-        {value: '2', label: 'streamax'},
-    ]);
+    const [itemsDoer, setItemsDoer] = useState([]);
+
+    const [stores, setStores] = useState(null)
+    const [vehicles, setVehicles] = useState(null)
+
+    const handleStore = (item) => {
+        const store = stores.filter((sto) => sto.id === item)[0]
+        if (store) {
+            setFormRegistry({
+                ...formRegistry,
+                'provider_documents_id': store.id
+            })
+        }
+    }
+
+    const handleVehicle = (item) => {
+        const vehicle = vehicles.filter((veh) => veh.vehicle_id === item)[0]
+        if (vehicle) {
+            setFormRegistry({
+                ...formRegistry,
+                'vehicle_id': vehicle.vehicle_id
+            })
+        }
+    }
+
+    const handleChange = (event, name) => {
+        setFormRegistry({
+            ...formRegistry,
+            [name]: event.nativeEvent.text
+        })
+    }
+
+    const handleAdd = async () => {
+        const token = await AsyncStorage.getItem('token')
+        formRegistry.is_remind_issue = 0
+        formRegistry.is_remind_email = isChecked? "1" : "0"
+
+        const res = await insertRegistry(token, formRegistry)
+
+        if (res.status) {
+            Alert.alert('Thành công', 'Bạn nhập hồ sơ thành công')
+            navigation.navigate('Registry');
+        }
+        else {
+            Alert.alert('Thất bại', 'Bạn cần điền đầy đủ tất cả các trường')
+        }
+    }
 
     const [isChecked, setChecked] = useState(false);
+    const [formRegistry, setFormRegistry] = useState({})
+
+    useEffect(() => {
+        if (datePickerStart) 
+            setFormRegistry({
+                ...formRegistry,
+                'last_register_date': `${datePickerStart.replace(/-/g,'/')} 00:00:00`
+            })
+    },[datePickerStart])
+
+    useEffect(() => {
+        if (datePickerEnd) 
+            setFormRegistry({
+                ...formRegistry,
+                'date_expired': `${datePickerEnd.replace(/-/g,'/')} 00:00:00`
+            })
+    },[datePickerEnd])
 
     useEffect(() => {
         (async () => {
+            const token = await AsyncStorage.getItem('token')
+
             const galleryStatus = await ImagePicker.requestMediaLibraryPermissionsAsync();
             setHasGalleryPermission(galleryStatus.status === 'granted')
             const cameraStatus = await ImagePicker.requestCameraPermissionsAsync();
             setHasCameraPermission(cameraStatus.status === 'granted')
+
+            const registryCenterList = await getRegistryCenterList(token)
+            const vehicleList = await getVehiclesList(token)
+
+            setStores(registryCenterList)
+            setVehicles(vehicleList)
+
+            setItemsRegistration(registryCenterList.map(item => ({
+                value: item.id,
+                label: item.name
+            })))
+
+            setItemsDoer(vehicleList.map(item => ({
+                value: item.vehicle_id, 
+                label: item.plate
+            })))
+
+            const userInfo = await loginInfo(token);
+            setFormRegistry({
+                ...formRegistry,
+                'user_name': userInfo.user_name
+            })
         })();
     }, []);
 
@@ -140,12 +232,13 @@ const FormRegistry = ({ navigation }) => {
                                     dropDownContainerStyle={{ borderColor:'white', position: 'relative', top: 0 }}
                                     className='border-white'
                                     style={style.shadow}
+                                    onChangeValue={item => handleStore(item)}
                                 />
                             </View>
                         </View>
 
                         <View className='mt-2 mx-8' style={{ zIndex: 90 }}>
-                            <Text className='px-2 py-2 font-medium'>Người thực hiện <Text className='text-[#FF0000]'>*</Text></Text>
+                            <Text className='px-2 py-2 font-medium'>Mã phương tiện <Text className='text-[#FF0000]'>*</Text></Text>
                             <DropDownPicker
                                 open={openDoer}
                                 value={valueDoer}
@@ -153,11 +246,12 @@ const FormRegistry = ({ navigation }) => {
                                 setOpen={setOpenDoer}
                                 setValue={setValueDoer}
                                 setItems={setItemsDoer}
-                                placeholder='Người thực hiện'
+                                placeholder='Nhập mã phương tiện'
                                 placeholderStyle={{color:'#B0B0B0'}}
                                 dropDownContainerStyle={{ borderColor:'white', position: 'relative', top: 0 }}
                                 className='border-white'
                                 style={style.shadow}
+                                onChangeValue={item => handleVehicle(item)}
                             />
                         </View>
 
@@ -165,6 +259,7 @@ const FormRegistry = ({ navigation }) => {
                             <View className='flex-1'>
                                 <Text className='px-2 py-2 font-medium'>Số phiếu kiểm định <Text className='text-[#FF0000]'>*</Text></Text>
                                 <TextInput
+                                    onChange={(e) => handleChange(e, 'document_id')}
                                     className='bg-white px-2 py-3 rounded-lg'
                                     placeholder="Nhập phiếu kiểm định"
                                     style={style.shadow}
@@ -173,6 +268,7 @@ const FormRegistry = ({ navigation }) => {
                             <View className='flex-1'>
                                 <Text className='px-2 py-2 font-medium'>Phí dịch vụ <Text className='text-[#FF0000]'>*</Text></Text>
                                 <TextInput
+                                    onChange={(e) => handleChange(e, 'fee')}
                                     className='bg-white px-2 py-3 rounded-lg'
                                     placeholder="Nhập phí dịch vụ"
                                     keyboardType="numeric"
@@ -193,6 +289,8 @@ const FormRegistry = ({ navigation }) => {
                                     </Text>
                                     <Icon name="calendar" size={20}></Icon>
                                     <DateTimePickerModal
+                                        minimumDate={getPreviousMonth()}
+                                        maximumDate={new Date()}
                                         isDarkModeEnabled={true}
                                         isVisible={isDatePickerStart}
                                         mode="date"
@@ -213,6 +311,7 @@ const FormRegistry = ({ navigation }) => {
                                     </Text>
                                     <Icon name="calendar" size={20}></Icon>
                                     <DateTimePickerModal
+                                        minimumDate={getNextDay()}
                                         isDarkModeEnabled={true}
                                         isVisible={isDatePickerEnd}
                                         mode="date"
@@ -263,7 +362,7 @@ const FormRegistry = ({ navigation }) => {
                     </ScrollView>
                 </View>
                 <Pressable 
-                    onPress={() => navigation.navigate('Registry')} 
+                    onPress={handleAdd} 
                     className='flex flex-row justify-between items-center w-[40%] mx-auto bg-btn_color py-2 px-11 rounded-2xl' 
                     style={style.shadow}
                 >
