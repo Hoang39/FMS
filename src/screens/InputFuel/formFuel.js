@@ -141,7 +141,7 @@ const FormFuel = ({ navigation }) => {
                     name: imageUri.split("/").pop()
                 });
                 
-                // const res = await uploadTmpFileFuel(token, formData)
+                const res = await uploadTmpFileFuel(token, formData)
                 // console.log(img);
                 // setImageUpload(prev => prev.push(img))
             }
