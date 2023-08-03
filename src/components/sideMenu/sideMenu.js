@@ -1,3 +1,5 @@
+import { useEffect, useState } from 'react';
+import { loginInfo } from '../../api/User/user';
 import {View, Text, Image, Pressable, Alert} from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome5';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -8,6 +10,16 @@ import logo from '../../assets/images/logo.png'
 import avatar from '../../assets/images/avatar.png'
 
 const SideMenu = ({ navigation }) => {
+    const [name, setName] = useState('')
+
+    useEffect(() => {
+        (async () => {
+            const token = await AsyncStorage.getItem('token')
+            const res = await loginInfo(token)
+            setName(res.name)
+        })()
+    }, [])
+
     const handleLogout = async () => {
         Alert.alert('Thành công', 'Bạn đăng xuất thành công')
         await AsyncStorage.removeItem('token')
@@ -21,7 +33,7 @@ const SideMenu = ({ navigation }) => {
                 <View className='my-2 p-2 border-2 border-[#ccc] rounded-full overflow-hidden'>
                     <Image source={avatar} className='w-28 h-28'></Image>
                 </View>
-                <Text className='text-xl font-bold text-[#333]'>Đặng Văn Tiếp</Text>
+                <Text className='text-xl font-semibold text-[#333]'>{name}</Text>
             </View>
 
             <View className='flex mt-6'>

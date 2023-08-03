@@ -16,9 +16,9 @@ import blankImg from '../../assets/images/blankImg.png'
 import { SafeAreaView } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { getRegistryCenterList } from '../../api/Registry/registry';
-import { loginInfo } from '../../api/User/user';
 import { getVehiclesList } from '../../api/Fuel/fuel';
-import { getVehiclePeriodTollList, getVehicleTollList, insertToll } from '../../api/Toll/toll';
+import { getVehiclePeriodTollList, getVehicleTollList, insertToll, updateToll, viewToll } from '../../api/Toll/toll';
+import { ActivityIndicator } from 'react-native';
 
 const formatDate = (date, specChar = '-') => {
     var d = new Date(date),
@@ -42,7 +42,9 @@ const getPreviousMonth = () => {
     return new Date(previousMonthYear, previousMonthMonth, 1);
 }
 
-const FormToll = ({ navigation }) => {
+const DetailToll = ({ navigation, route }) => {
+    const { id, vehicle_id } = route.params;
+
     const [hasGalleryPermission, setHasGalleryPermission] = useState(null);
     const [hasCameraPermission, setHasCameraPermission] = useState(null);
     const { showActionSheetWithOptions } = useActionSheet();
@@ -109,15 +111,17 @@ const FormToll = ({ navigation }) => {
         })
     }
 
-    const handleAdd = async () => {
+    const handleUpdate = async () => {
         const token = await AsyncStorage.getItem('token')
-        formToll.is_remind_issue = 0
+        formToll.id = id
+        formToll.vehicle_id = vehicle_id
+        formToll.is_remind_issue = "0"
         formToll.is_remind_email = isChecked? "1" : "0"
 
-        const res = await insertToll(token, formToll)
+        const res = await updateToll(token, formToll)
 
         if (res.status) {
-            Alert.alert('Thành công', 'Bạn nhập hồ sơ thành công')
+            Alert.alert('Thành công', 'Bạn chỉnh sửa hồ sơ thành công')
             navigation.navigate('Toll');
         }
         else {
@@ -132,7 +136,7 @@ const FormToll = ({ navigation }) => {
 
                 const vehiclePeriodTollList = await getVehiclePeriodTollList(token)
                 const res = vehiclePeriodTollList.filter(item => item.period === valuePeriod && item.car_type_id === valueVehicle)
-                
+
                 setFormToll({
                     ...formToll,
                     'vehicle_road_fees_id': res[0].id
@@ -169,8 +173,12 @@ const FormToll = ({ navigation }) => {
         }
     },[datePickerStart, datePickerEnd])
 
+    const [loading, setLoading] = useState(true)
+
     useEffect(() => {
         (async () => {
+            setLoading(true)
+
             const token = await AsyncStorage.getItem('token')
 
             const galleryStatus = await ImagePicker.requestMediaLibraryPermissionsAsync();
@@ -200,11 +208,43 @@ const FormToll = ({ navigation }) => {
                 label: item.name
             })))
 
-            const userInfo = await loginInfo(token);
-            setFormToll({
-                ...formToll,
-                'user_name': userInfo.user_name
-            })
+            const res = await viewToll(token, id, vehicle_id)
+            const vehiclePeriodTollList = await getVehiclePeriodTollList(token)
+            const vehiclePeriodToll = vehiclePeriodTollList.filter(item => item.id === res.vehicle_road_fees_id)[0]
+
+            setValueRegistration(res.provider_documents_id)
+            setValueDoer(vehicle_id)
+            setValuePeriod(vehiclePeriodToll.period)
+            setValueVehicle(vehiclePeriodToll.car_type_id)
+            setDatePickerStart(res.last_register_date.slice(0, 10))
+            setDatePickerEnd(res.date_expired.slice(0, 10))
+            setChecked(res.is_remind_email === "1")
+
+            setFormToll(
+                (({ 
+                    provider_documents_id, 
+                    is_remind_email,
+                    last_register_date, 
+                    date_expired, 
+                    document_id, 
+                    fee, 
+                    user_name, 
+                    vehicle_road_fees_id,
+                    file_attach
+                }) => 
+                ({ provider_documents_id, 
+                    is_remind_email,
+                    last_register_date, 
+                    date_expired, 
+                    document_id, 
+                    fee, 
+                    user_name, 
+                    vehicle_road_fees_id,
+                    file_attach 
+                }))(res)
+            )
+
+            setLoading(false)
         })();
     }, []);
 
@@ -255,6 +295,11 @@ const FormToll = ({ navigation }) => {
                 <Header navigation={navigation} title='PHÍ ĐƯỜNG BỘ'/>
 
                 <View className='h-[75%]'>
+                {
+                    loading
+                    ?
+                    <ActivityIndicator size="large" />
+                    :
                     <ScrollView nestedScrollEnabled={true} style={{flex: 1}} contentContainerStyle={{flexGrow:1}}>
                         <View className='flex flex-row mt-2 mx-8 justify-between space-x-4' style={{ zIndex: 100 }}>
                             <View className='flex-1'>
@@ -306,6 +351,7 @@ const FormToll = ({ navigation }) => {
                                     className='bg-white px-2 py-3 rounded-lg'
                                     placeholder="Nhập phiếu kiểm định"
                                     style={style.shadow}
+                                    value={formToll.document_id}
                                 />
                             </View>
                             <View className='flex-1'>
@@ -316,6 +362,7 @@ const FormToll = ({ navigation }) => {
                                     placeholder="Nhập phí dịch vụ"
                                     keyboardType="numeric"
                                     style={style.shadow}
+                                    value={formToll.fee}
                                 />
                             </View>
                         </View>
@@ -437,14 +484,15 @@ const FormToll = ({ navigation }) => {
                             <Text className='italic text-white'>Tự động nhắc khi hết hạn</Text>
                         </View>
                     </ScrollView>
+                }
                 </View>
                 <Pressable 
-                    onPress={handleAdd} 
-                    className='flex flex-row justify-between items-center w-[40%] mx-auto bg-btn_color py-2 px-11 rounded-2xl' 
+                    onPress={handleUpdate} 
+                    className='flex flex-row justify-between items-center w-[60%] mx-auto bg-btn_color py-2 px-11 rounded-2xl' 
                     style={style.shadow}
                 >
                     <Icon name="save" size={24} color='#CCC' solid></Icon>
-                    <Text className='text-[#CCC] text-lg font-semibold'>LƯU</Text>
+                    <Text className='text-[#CCC] text-lg font-semibold'>CHỈNH SỬA</Text>
                 </Pressable>
             </SafeAreaView>
 
@@ -453,4 +501,4 @@ const FormToll = ({ navigation }) => {
     )
 }
 
-export default FormToll
+export default DetailToll

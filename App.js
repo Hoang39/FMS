@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { View, Text, LogBox } from "react-native";
-import { NavigationContainer, useNavigation } from "@react-navigation/native";
+import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { ActionSheetProvider } from '@expo/react-native-action-sheet';
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -18,8 +18,8 @@ import FormToll from "./src/screens/Toll/formToll";
 import Profile from "./src/screens/Profile/profile";
 import Contact from "./src/screens/Contact/contact";
 import Feedback from "./src/screens/Feedback/feedback";
-import { Alert } from "react-native";
 import DetailRegistry from "./src/screens/Registry/detailRegistry";
+import DetailToll from "./src/screens/Toll/detailToll";
 
 const Stack = createNativeStackNavigator();
 
@@ -51,7 +51,9 @@ export default function App() {
       <NavigationContainer>
         <Stack.Navigator
           initialRouteName={isLoggedIn ? 'InputFuel' : 'SignIn'}
-          screenOptions={{ headerShown: false }}
+          screenOptions={{ 
+            headerShown: false
+          }}
         >
           <Stack.Screen name="SignIn" component={SignIn} />
           <Stack.Screen name="Profile" component={Profile} />
@@ -71,6 +73,7 @@ export default function App() {
 
           <Stack.Screen name="Toll" component={Toll} />
           <Stack.Screen name="FormToll" component={FormToll} />
+          <Stack.Screen name="DetailToll" component={DetailToll} />
 
         </Stack.Navigator>
       </NavigationContainer>

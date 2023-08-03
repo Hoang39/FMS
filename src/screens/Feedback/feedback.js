@@ -1,6 +1,4 @@
-import { useState } from 'react'
-import { Pressable, View, Text, StatusBar, Image, TextInput, SafeAreaView } from 'react-native'
-import Icon from 'react-native-vector-icons/FontAwesome5';
+import { Pressable, View, Text, Image, TextInput, SafeAreaView, StatusBar } from 'react-native'
 
 import Header from '../../components/header/header'
 import Footer from '../../components/footer/footer'
@@ -12,6 +10,8 @@ const Feedback = ({ navigation }) => {
     return (
         <View className='bg-bg_color h-full flex justify-between'>
             <SafeAreaView className='flex justify-between'>
+                <StatusBar />
+                
                 <Header navigation={navigation} title='PHẢN HỒI THÔNG TIN'/>
                 <View>
                     <View className='bg-white p-8 rounded-full mx-auto my-4'>

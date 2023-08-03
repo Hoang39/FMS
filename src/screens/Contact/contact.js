@@ -1,13 +1,9 @@
-import { useState } from 'react'
-import { Pressable, View, Text, StatusBar, ScrollView } from 'react-native'
-import DateTimePickerModal from "react-native-modal-datetime-picker";
-import Icon from 'react-native-vector-icons/FontAwesome5';
-import { Table, Row } from 'react-native-table-component';
+import { View, Text, StatusBar, Image, SafeAreaView } from 'react-native'
 
 import Header from '../../components/header/header'
 import Footer from '../../components/footer/footer'
-import style from '../../styles/style'
-import { SafeAreaView } from 'react-native';
+
+import logo from '../../assets/images/logo.png'
 
 const Contact = ({ navigation }) => {
     return (
@@ -16,7 +12,25 @@ const Contact = ({ navigation }) => {
                 <StatusBar />
                 <Header navigation={navigation} title='LIÊN HỆ'/>
 
+                <View className='bg-white p-8 rounded-full mx-auto my-4'>
+                    <Image source={logo}></Image>
+                </View>
 
+                <View className='bg-white p-8 rounded-2xl mx-auto my-8 mx-10 space-y-4'>
+                    <Text className='mx-auto font-bold text-2xl pb-4'>Liên hệ</Text>
+                    <View className='flex flex-row items-center'>
+                        <Text className='font-medium text-base w-1/2'>Tên công ty:</Text>
+                        <Text className='w-1/2'>Công ty TNHH A.D.A - Magiwan</Text>
+                    </View>
+                    <View className='flex flex-row items-center'>
+                        <Text className='font-medium text-base w-1/2'>Số điện thoại:</Text>
+                        <Text className='w-1/2'>1900 6061</Text>
+                    </View>
+                    <View className='flex flex-row items-center'>
+                        <Text className='font-medium text-base w-1/2'>Địa chỉ:</Text>
+                        <Text className='w-1/2'>106 - 108 Thống Nhất, Tân Thành, Tân Phú, TP.HCM</Text>
+                    </View>
+                </View>
             </SafeAreaView>
 
             <Footer navigation={navigation} id={0}/>

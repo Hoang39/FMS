@@ -75,6 +75,12 @@ const HistoryFuel = ({ navigation }) => {
             setLoading(true)
             const token = await AsyncStorage.getItem('token')
             const actionList = await getActionList(token, { from_date: dateStart, to_date: dateEnd })
+            
+            if (actionList === undefined) {
+                await AsyncStorage.removeItem('token')
+                Alert.alert('Thông báo','Tài khoản hết thời gian sử dụng. Vui lòng đăng nhập lại')
+                navigation.navigate('SignIn')
+            }
 
             setTableData(actionList.map(item => [item.location_name, item.trk_time, item.volume_change, item.type === '1'? 'Xả' : 'Nạp', removeBtn(item.id, item.trk_time), item.id]));
             setLoading(false)

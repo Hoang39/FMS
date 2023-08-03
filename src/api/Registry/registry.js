@@ -12,7 +12,7 @@ export const getRegistryList = async (token, vehicle_id) => {
     });
     return JSON.parse(res.data.trim())
   } catch(error) {
-    return 'error '+error;
+    return undefined;
   }
 };
 
@@ -50,7 +50,7 @@ export const insertRegistry = async(token, formRegistry) => {
   try {
     const res = await axios({
       method: "post",
-      url: `${testv4_api_url}/api/TabHoSoGiayToController/insertBaoHiem`,
+      url: `${testv4_api_url}/api/TabHoSoGiayToController/insertDangKiem`,
       data: formRegistry,
       headers: {
         Authorization: `Bearer ${token}`,

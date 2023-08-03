@@ -30,7 +30,7 @@ const formatDate = (date, specChar = '-') => {
     if (day.length < 2) 
         day = '0' + day;
 
-    return [day, month, year].join(specChar);
+    return [year, month, day].join(specChar);
 }
 
 const getPreviousMonth = () => {
@@ -39,13 +39,6 @@ const getPreviousMonth = () => {
     let previousMonthYear = currentDate.getMonth() === 0 ? currentDate.getFullYear() - 1 : currentDate.getFullYear();
     let previousMonthMonth = currentDate.getMonth() === 0 ? 11 : currentDate.getMonth() - 1;
     return new Date(previousMonthYear, previousMonthMonth, 1);
-}
-
-const getNextDay = () => {
-    let currentDate = new Date();
-    currentDate.setDate(currentDate.getDate()+1); 
-
-    return currentDate
 }
 
 const FormRegistry = ({ navigation }) => {
@@ -133,6 +126,15 @@ const FormRegistry = ({ navigation }) => {
                 'date_expired': `${datePickerEnd.replace(/-/g,'/')} 00:00:00`
             })
     },[datePickerEnd])
+
+    useEffect(() => {
+        if (datePickerEnd && datePickerStart) {
+            if (datePickerEnd.localeCompare(datePickerStart) !== 1) {
+                Alert.alert('Lỗi', 'Chọn ngày hết hạn lớn hơn ngày đăng ký')
+                setDatePickerEnd(null)
+            }
+        }
+    },[datePickerStart, datePickerEnd])
 
     useEffect(() => {
         (async () => {
@@ -240,6 +242,8 @@ const FormRegistry = ({ navigation }) => {
                         <View className='mt-2 mx-8' style={{ zIndex: 90 }}>
                             <Text className='px-2 py-2 font-medium'>Mã phương tiện <Text className='text-[#FF0000]'>*</Text></Text>
                             <DropDownPicker
+                                searchable={true}
+                                searchPlaceholder="Tìm kiếm"
                                 open={openDoer}
                                 value={valueDoer}
                                 items={itemsDoer}
@@ -311,7 +315,7 @@ const FormRegistry = ({ navigation }) => {
                                     </Text>
                                     <Icon name="calendar" size={20}></Icon>
                                     <DateTimePickerModal
-                                        minimumDate={getNextDay()}
+                                        minimumDate={getPreviousMonth()}
                                         isDarkModeEnabled={true}
                                         isVisible={isDatePickerEnd}
                                         mode="date"

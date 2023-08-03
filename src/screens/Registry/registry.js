@@ -56,6 +56,12 @@ const Registry = ({ navigation }) => {
         if (isFocused) {
             const token = await AsyncStorage.getItem('token')
             const res = await getRegistryList(token, item)
+
+            if (res === undefined) {
+                await AsyncStorage.removeItem('token')
+                Alert.alert('Thông báo','Tài khoản hết thời gian sử dụng. Vui lòng đăng nhập lại')
+                navigation.navigate('SignIn')
+            }
             
             Alert.alert('Thông báo', res.mess)
 

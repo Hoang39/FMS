@@ -60,7 +60,7 @@ export const getActionList = async(token, formDate) => {
     });
     return JSON.parse(res.data.trim()).data
   } catch(error) {
-    return 'error '+error;
+    return undefined;
   }
 };
 
