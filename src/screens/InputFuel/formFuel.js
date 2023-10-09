@@ -127,26 +127,26 @@ const FormFuel = ({ navigation }) => {
             })
     },[datePicker, timePicker])
 
-    useEffect(() => {
-        (async () => {
-            if (imagePicker.length) {
-                const token = await AsyncStorage.getItem('token')
+    // useEffect(() => {
+    //     (async () => {
+    //         if (imagePicker.length) {
+    //             const token = await AsyncStorage.getItem('token')
                 
-                let imageUri = imagePicker[imagePicker.length-1].assets[0].uri
+    //             let imageUri = imagePicker[imagePicker.length-1].assets[0].uri
                 
-                const formData = new FormData();
-                formData.append('file', {
-                    uri : imageUri,
-                    type: mime.getType(imageUri),
-                    name: imageUri.split("/").pop()
-                });
+    //             const formData = new FormData();
+    //             formData.append('file', {
+    //                 uri : imageUri,
+    //                 type: mime.getType(imageUri),
+    //                 name: imageUri.split("/").pop()
+    //             });
                 
-                const res = await uploadTmpFileFuel(token, formData)
-                // console.log(img);
-                // setImageUpload(prev => prev.push(img))
-            }
-        })()
-    }, [imagePicker])
+    //             const res = await uploadTmpFileFuel(token, formData)
+    //             console.log(img);
+    //             setImageUpload(prev => prev.push(img))
+    //         }
+    //     })()
+    // }, [imagePicker])
 
     const handleChange = (event, name) => {
         setFormFuel({

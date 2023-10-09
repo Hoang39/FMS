@@ -1,6 +1,6 @@
 {
   "expo": {
-    "name": "FMS",
+    "name": "Nạp dầu - A.D.A",
     "slug": "FMS",
     "version": "1.0.0",
     "orientation": "portrait",
@@ -15,16 +15,23 @@
       "**/*"
     ],
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.hoenne.FMS"
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
-      }
+      },
+      "package": "com.hoenne.FMS"
     },
     "web": {
       "favicon": "./assets/favicon.png"
+    },
+    "extra": {
+      "eas": {
+        "projectId": "c255da58-1f39-423b-988a-35e719da8dc8"
+      }
     }
   }
 }
