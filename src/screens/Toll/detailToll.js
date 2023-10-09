@@ -27,7 +27,7 @@ const formatDate = (date, specChar = '-') => {
     year = d.getFullYear();
 
     if (month.length < 2) 
-        month = '0' + month;
+        month = '0' + month; 
     if (day.length < 2) 
         day = '0' + day;
 
@@ -131,12 +131,12 @@ const DetailToll = ({ navigation, route }) => {
 
     useEffect(() => {
         (async () => {
-            if (valuePeriod && valueVehicle) {
+            if (valuePeriod && valueVehicle && Object.keys(formToll).length) {
                 const token = await AsyncStorage.getItem('token')
 
                 const vehiclePeriodTollList = await getVehiclePeriodTollList(token)
                 const res = vehiclePeriodTollList.filter(item => item.period === valuePeriod && item.car_type_id === valueVehicle)
-
+                
                 setFormToll({
                     ...formToll,
                     'vehicle_road_fees_id': res[0].id
