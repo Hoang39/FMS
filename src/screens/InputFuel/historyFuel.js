@@ -37,7 +37,7 @@ const HistoryFuel = ({ navigation }) => {
     const [isDatePickerVisible, setDatePickerVisibility] = useState(false);
     const [datePicker, setDatePicker] = useState(null)
 
-    const tableHead = ['Cơ sở xăng dầu','Thời gian nạp/xả','Lưu lượng','Chế độ','']
+    const tableHead = ['CSXD','T.gian nạp/xả','Lưu lượng','Chế độ','']
     const flexArr = [4,4,3,2,2]
     
     const [tableData, setTableData] = useState([])

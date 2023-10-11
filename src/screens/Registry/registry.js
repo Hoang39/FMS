@@ -31,7 +31,7 @@ const Registry = ({ navigation }) => {
             <Text className='text-[#ff0000] text-xs'>Xóa</Text>
         </Pressable>
     )
-    const tableHead = ['Trung tâm đăng kiểm','Ngày đăng kiểm','Ngày hết hạn','']
+    const tableHead = ['TTĐK','Đ.kiểm','H.hạn','']
     const [tableData, setTableData] = useState([])
 
     const [loading, setLoading] = useState(true)

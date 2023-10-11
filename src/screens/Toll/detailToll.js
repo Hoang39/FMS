@@ -345,11 +345,11 @@ const DetailToll = ({ navigation, route }) => {
 
                         <View className='flex flex-row mt-2 mx-8 justify-between space-x-4'>
                             <View className='flex-1'>
-                                <Text className='px-2 py-2 font-medium'>Số phiếu kiểm định <Text className='text-[#FF0000]'>*</Text></Text>
+                                <Text className='px-2 py-2 font-medium'>Số phiếu <Text className='text-[#FF0000]'>*</Text></Text>
                                 <TextInput
                                     onChange={(e) => handleChange(e, 'document_id')}
                                     className='bg-white px-2 py-3 rounded-lg'
-                                    placeholder="Nhập phiếu kiểm định"
+                                    placeholder="Nhập phiếu"
                                     style={style.shadow}
                                     value={formToll.document_id}
                                 />

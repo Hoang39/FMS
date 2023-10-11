@@ -19,16 +19,16 @@ const Contact = ({ navigation }) => {
                 <View className='bg-white p-8 rounded-2xl mx-auto my-8 mx-10 space-y-4'>
                     <Text className='mx-auto font-bold text-2xl pb-4'>Liên hệ</Text>
                     <View className='flex flex-row items-center'>
-                        <Text className='font-medium text-base w-1/2'>Tên công ty:</Text>
-                        <Text className='w-1/2'>Công ty TNHH A.D.A - Magiwan</Text>
+                        <Text className='font-medium text-base w-1/3'>Tên:</Text>
+                        <Text className='w-2/3'>Công ty TNHH A.D.A</Text>
                     </View>
                     <View className='flex flex-row items-center'>
-                        <Text className='font-medium text-base w-1/2'>Số điện thoại:</Text>
-                        <Text className='w-1/2'>1900 6061</Text>
+                        <Text className='font-medium text-base w-1/3'>Sđt:</Text>
+                        <Text className='w-2/3'>1900 6061</Text>
                     </View>
                     <View className='flex flex-row items-center'>
-                        <Text className='font-medium text-base w-1/2'>Địa chỉ:</Text>
-                        <Text className='w-1/2'>106 - 108 Thống Nhất, Tân Thành, Tân Phú, TP.HCM</Text>
+                        <Text className='font-medium text-base w-1/3'>Địa chỉ:</Text>
+                        <Text className='w-2/3'>106 - 108 Thống Nhất, Tân Thành, Tân Phú</Text>
                     </View>
                 </View>
             </SafeAreaView>

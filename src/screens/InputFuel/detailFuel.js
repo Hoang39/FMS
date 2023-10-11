@@ -330,13 +330,13 @@ const DetailFuel = ({ navigation, route }) => {
                             </View>
 
                             <View className='flex-1'>
-                                <Text className='px-2 py-2 font-medium'>Ngày tháng năm <Text className='text-[#FF0000]'>*</Text></Text>
+                                <Text className='px-2 py-2 font-medium'>Ngày tháng <Text className='text-[#FF0000]'>*</Text></Text>
                                 <Pressable 
                                     onPress={() => setDatePickerVisibility(true)}
                                     className='bg-white rounded-lg flex flex-row justify-between items-center px-2 py-3.5' style={style.shadow}
                                 >
                                     <Text className='text-text_color'>
-                                        {datePicker ? datePicker: 'Ngày tháng năm'}
+                                        {datePicker ? datePicker: 'Ngày tháng'}
                                     </Text>
                                     <Icon name="calendar" size={20}></Icon>
                                     <DateTimePickerModal
