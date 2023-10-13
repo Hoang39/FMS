@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { Pressable, View, Text, ScrollView, TextInput, Image, Alert, ActivityIndicator } from 'react-native'
+import { Pressable, View, Text, ScrollView, TextInput, Image, Alert, ActivityIndicator, StyleSheet } from 'react-native'
 import { useActionSheet } from '@expo/react-native-action-sheet';
 import DropDownPicker from 'react-native-dropdown-picker';
 import DateTimePickerModal from "react-native-modal-datetime-picker";
@@ -15,7 +15,7 @@ import style from '../../styles/style'
 import blankImg from '../../assets/images/blankImg.png'
 import { SafeAreaView } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { getRegistryCenterList, insertRegistry, updateRegistry, viewRegistry } from '../../api/Registry/registry';
+import { getRegistryCenterList, insertRegistry, upLoadImageRegistry, updateRegistry, viewRegistry } from '../../api/Registry/registry';
 import { getVehiclesList } from '../../api/Fuel/fuel';
 
 const formatDate = (date, specChar = '-') => {
@@ -48,6 +48,9 @@ const DetailRegistry = ({ navigation, route }) => {
     const { showActionSheetWithOptions } = useActionSheet();
 
     const [imagePicker, setImagePicker] = useState([]);
+    const [imageArray, setImageArray] = useState([]);
+    const [deleteArrayImage, setDeleteArrayImage] = useState([]);
+    const [attachImage, setAttachImage] = useState([]);
 
     const [isDatePickerStart, setIsDatePickerStart] = useState(false);
     const [datePickerStart, setDatePickerStart] = useState(null)
@@ -99,6 +102,17 @@ const DetailRegistry = ({ navigation, route }) => {
         formRegistry.vehicle_id = vehicle_id
         formRegistry.is_remind_issue = "0"
         formRegistry.is_remind_email = isChecked? "1" : "0"
+
+        // Kiểm tra có xoá image hay ko
+        if (deleteArrayImage && deleteArrayImage.length > 0) {
+            let _newArray = [...formRegistry.file_attach ||[], ...deleteArrayImage||[]]
+            let myJsonString = JSON.stringify(_newArray)
+            formRegistry.file_attach = myJsonString
+        }else{
+            let _newArray = [...formRegistry.file_attach ||[], ...attachImage||[]]
+            let myJsonString = JSON.stringify(_newArray)
+            formRegistry.file_attach = myJsonString
+        }
 
         const res = await updateRegistry(token, formRegistry)
 
@@ -169,6 +183,15 @@ const DetailRegistry = ({ navigation, route }) => {
 
             const res = await viewRegistry(token, id, vehicle_id)
             
+            let _item_of_image = []
+            if (res.file_attach && res.file_attach.length > 0) {
+                res.file_attach.forEach(element => {
+                    let _url = 'http://testv4.adagps.com/' + element.duong_dan + element.name
+                    _item_of_image.push(_url)
+                });
+            }
+            setImageArray(_item_of_image)
+
             setValueRegistration(res.provider_documents_id)
             setValueDoer(vehicle_id)
             setDatePickerStart(res.last_register_date.slice(0, 10))
@@ -209,8 +232,35 @@ const DetailRegistry = ({ navigation, route }) => {
             quality: 1,
         })
 
-        if (!result.canceled)
+        const fileName = result.assets[0].uri.split('/').pop();
+        const fileType = fileName.split('.').pop();
+
+        const formData = new FormData()
+        formData.append('file_hsgt_dangkiem', { 
+            uri: result.assets[0].uri, 
+            name: fileName, 
+            type: `image/${fileType}` 
+        });
+
+        const token = await AsyncStorage.getItem('token')
+ 
+        let _upload_temps = await upLoadImageRegistry(token, formData)
+        if (_upload_temps.status == true) {
+            setAttachImage(attachImage.concat( {
+                name: _upload_temps.data.name,
+                file_type: _upload_temps.data.file_type,
+                file_size: _upload_temps.data.file_size,
+                duong_dan: _upload_temps.data.duong_dan,
+                id : null,
+                file_action: "3",
+                file_change: null,
+            }))
+        }
+
+        if (!result.canceled) {
             setImagePicker(imagePicker.concat([result.assets[0].uri]));
+            setImageArray(imageArray.concat([result.assets[0].uri]));
+        }
     }
 
     const photographImage = async () => {
@@ -220,8 +270,63 @@ const DetailRegistry = ({ navigation, route }) => {
             quality: 1,
         })
 
-        if (!result.canceled)
+        const fileName = result.assets[0].uri.split('/').pop();
+        const fileType = fileName.split('.').pop();
+
+        const formData = new FormData()
+        formData.append('file_hsgt_dangkiem', { 
+            uri: result.assets[0].uri, 
+            name: fileName, 
+            type: `image/${fileType}` 
+        });
+
+        const token = await AsyncStorage.getItem('token')
+ 
+        let _upload_temps = await upLoadImageRegistry(token, formData)
+        if (_upload_temps.status == true) {
+            setAttachImage(attachImage.concat( {
+                name: _upload_temps.data.name,
+                file_type: _upload_temps.data.file_type,
+                file_size: _upload_temps.data.file_size,
+                duong_dan: _upload_temps.data.duong_dan,
+                id : null,
+                file_action: "3",
+                file_change: null,
+            }))
+        }
+
+        if (!result.canceled) {
             setImagePicker(imagePicker.concat([result.assets[0].uri]));
+            setImageArray(imageArray.concat([result.assets[0].uri]));
+        }
+    }
+
+    const deleteImage = (item, index) => {
+        Alert.alert('Bạn có muốn Xoá', '', [
+			{
+				text: 'Cancel',
+			},
+			{
+				text: 'OK',
+				onPress: () => {
+					// Xử lý data image
+                    // Check item image
+                    const _clone_image_date = [...attachImage|| [], ...formRegistry.file_attach || []]
+                    _clone_image_date.forEach(i => {
+                        if (i.name === item.split('/').pop()) {
+                            i.file_action = "1"
+                        }
+                    })
+                    setDeleteArrayImage(_clone_image_date)
+
+                    // Xử lý view
+                    const _clone_array_image = [...imageArray]
+                    const removeIndex = _clone_array_image.findIndex((i) => i === item);
+                    _clone_array_image.splice(removeIndex, 1)
+                    setImageArray([..._clone_array_image])
+				},
+			},
+		]);
     }
 
     const pickOptions = () => {
@@ -379,13 +484,26 @@ const DetailRegistry = ({ navigation, route }) => {
                         <View className='mt-4 mx-8 h-80 border-white border-2 rounded-xl p-3'>
                             <Swiper>
                             {
-                                imagePicker.length
+                                // imagePicker.length
+                                // ?
+                                // imagePicker.map((item, index) => (
+                                //     <View className='border-2 border-[#b0b0b0] border-dashed' key={index}>
+                                //         <Image source={{uri: item}} className='h-full w-full'></Image> 
+                                //     </View>
+                                // ))
+                                // :
+                                // <View className='border-2 border-[#b0b0b0] border-dashed flex-1'>
+                                //     <Image source={blankImg} className='h-full w-full'></Image> 
+                                // </View>
+
+                                imageArray.length > 0 
                                 ?
-                                imagePicker.map((item, index) => (
-                                    <View className='border-2 border-[#b0b0b0] border-dashed' key={index}>
-                                        <Image source={{uri: item}} className='h-full w-full'></Image> 
+                                imageArray.map((item, index) => (
+                                    <View className='border-2 border-[#b0b0b0] border-dashed' key={index} style={css.container}>
+                                        <Image source={{uri: item}}  className='h-full w-full'></Image> 
+                                        <Icon name="trash" style={css.delete_icon} size={30} color='#4630EB' onPress={()=>deleteImage(item, index)}></Icon>
                                     </View>
-                                ))
+                                )) 
                                 :
                                 <View className='border-2 border-[#b0b0b0] border-dashed flex-1'>
                                     <Image source={blankImg} className='h-full w-full'></Image> 
@@ -419,5 +537,20 @@ const DetailRegistry = ({ navigation, route }) => {
         </View>
     )
 }
+
+const css = StyleSheet.create({
+	container: {
+		// display: 'inline-block',
+        position: 'relative'
+	},
+	image: {
+        // display: 'block'
+	},
+	delete_icon: {
+		position: 'absolute', 
+        top:10,
+        right: 10
+	},
+});
 
 export default DetailRegistry

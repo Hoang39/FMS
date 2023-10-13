@@ -131,8 +131,7 @@ export const updateFuelChange = async(token, formFuel, id) => {
   }
 };
 
-export const uploadTmpFileFuel = async(token, file_attach) => {
-  console.log(file_attach._parts)
+export const uploadTmpFileFuel = async(token, file_image) => {
   try {
     const res = await axios({
       method: "post",
@@ -141,12 +140,10 @@ export const uploadTmpFileFuel = async(token, file_attach) => {
         Authorization: `Bearer ${token}`,
         "Content-Type": "multipart/form-data",
       },
-      data: {
-        'file_attach': file_attach
-      },
+      data: file_image,
     });
     console.log(res.data.trim())
-    // return JSON.parse(res.data.trim())
+    return JSON.parse(res.data.trim())
   } catch(error) {
     console.log('error '+error);
     return 'error '+error;

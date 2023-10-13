@@ -109,3 +109,22 @@ export const viewToll = async(token, id, vehicle_id) => {
       return 'error '+error;
     }
   };
+
+  export const upLoadImageToll = async(token, file_image) => {
+    try {
+      const res = await axios({
+        method: "post",
+        url: `${testv4_api_url}/api/TabHoSoGiayToController/uploadTmpFilePhiduongbo`,
+        data: file_image,
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "multipart/form-data"
+        },
+      });
+      console.log(res.data.trim())
+      return JSON.parse(res.data.trim())
+      // return JSON.parse(res.data.trim()).data
+    } catch(error) {
+      return 'error '+error;
+    }
+  };

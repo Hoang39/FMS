@@ -31,12 +31,12 @@ const Profile = ({ navigation }) => {
 
                 <View className='py-24 px-4 w-full flex flex-row items-center justify-between space-x-8 bg-[#2884B7]'>
                     <View className='border-2 border-[#ccc] rounded-full overflow-hidden'>
-                        <Image source={avatar} className='w-40 h-40'></Image>
+                        <Image source={avatar} className='w-28 h-28'></Image>
                     </View>
                     <View className='space-y-4'>
-                        <Text className='text-white text-2xl font-semibold w-[60%]'>{user && user.name}</Text>
-                        <Text className='text-white text-base w-[60%]'>{user && user.user_name}</Text>
-                        <Text className='text-white text-base w-[60%]'>{user && user.address}</Text>
+                        <Text className='text-white text-xl font-semibold w-[80%]'>{user && user.name}</Text>
+                        <Text className='text-white text-base w-[80%]'>{user && user.user_name}</Text>
+                        <Text className='text-white text-base w-[80%]'>{user && user.address}</Text>
                     </View>
                 </View>
 

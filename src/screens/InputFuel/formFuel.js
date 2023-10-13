@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { Pressable, View, Text, ScrollView, TextInput, Image, SafeAreaView, Alert } from 'react-native'
+import { Pressable, View, Text, ScrollView, TextInput, Image, SafeAreaView, Alert, StyleSheet } from 'react-native'
 import { useActionSheet } from '@expo/react-native-action-sheet';
 import DropDownPicker from 'react-native-dropdown-picker';
 import DateTimePickerModal from "react-native-modal-datetime-picker";
@@ -59,6 +59,9 @@ const FormFuel = ({ navigation }) => {
     const { showActionSheetWithOptions } = useActionSheet();
     
     const [imagePicker, setImagePicker] = useState([]);
+    const [imageArray, setImageArray] = useState([]);
+    const [deleteArrayImage, setDeleteArrayImage] = useState([]);
+    const [attachImage, setAttachImage] = useState([]);
 
     const [isDatePickerVisible, setDatePickerVisibility] = useState(false);
     const [datePicker, setDatePicker] = useState(null)
@@ -127,27 +130,6 @@ const FormFuel = ({ navigation }) => {
             })
     },[datePicker, timePicker])
 
-    // useEffect(() => {
-    //     (async () => {
-    //         if (imagePicker.length) {
-    //             const token = await AsyncStorage.getItem('token')
-                
-    //             let imageUri = imagePicker[imagePicker.length-1].assets[0].uri
-                
-    //             const formData = new FormData();
-    //             formData.append('file', {
-    //                 uri : imageUri,
-    //                 type: mime.getType(imageUri),
-    //                 name: imageUri.split("/").pop()
-    //             });
-                
-    //             const res = await uploadTmpFileFuel(token, formData)
-    //             console.log(img);
-    //             setImageUpload(prev => prev.push(img))
-    //         }
-    //     })()
-    // }, [imagePicker])
-
     const handleChange = (event, name) => {
         setFormFuel({
             ...formFuel,
@@ -165,6 +147,16 @@ const FormFuel = ({ navigation }) => {
     const handleAdd = async () => {
         const token = await AsyncStorage.getItem('token')
         const res = await insertFuelChange(token, formFuel)
+
+        if (deleteArrayImage && deleteArrayImage.length > 0) {
+            let _newArray = [...formFuel.file_attach ||[], ...deleteArrayImage||[]]
+            let myJsonString = JSON.stringify(_newArray)
+            formFuel.file_attach = myJsonString
+        }else{
+            let _newArray = [...formFuel.file_attach ||[], ...attachImage||[]]
+            let myJsonString = JSON.stringify(_newArray)
+            formFuel.file_attach = myJsonString
+        }
 
         if (res.status) {
             Alert.alert('Thành công', 'Bạn thêm lần nạp/xả thành công')
@@ -210,15 +202,43 @@ const FormFuel = ({ navigation }) => {
         }
     }
 
-    const pickImage = async () => { 
+    const pickImage = async () => {
         let result = await ImagePicker.launchImageLibraryAsync({
             mediaTypes: ImagePicker.MediaTypeOptions.Images,
+            allowsMultipleSelection: true,
             aspect: [3,4],
             quality: 1,
         })
-  
-        if (!result.canceled)
-            setImagePicker(imagePicker.concat([result]));
+
+        const fileName = result.assets[0].uri.split('/').pop();
+        const fileType = fileName.split('.').pop();
+
+        const formData = new FormData()
+        formData.append('file_fuel', { 
+            uri: result.assets[0].uri, 
+            name: fileName, 
+            type: `image/${fileType}` 
+        });
+
+        const token = await AsyncStorage.getItem('token')
+ 
+        let _upload_temps = await uploadTmpFileFuel(token, formData)
+        if (_upload_temps.status == true) {
+            setAttachImage(attachImage.concat( {
+                name: _upload_temps.data.name,
+                file_type: _upload_temps.data.file_type,
+                file_size: _upload_temps.data.file_size,
+                duong_dan: _upload_temps.data.duong_dan,
+                id : null,
+                file_action: "3",
+                file_change: null,
+            }))
+        }
+
+        if (!result.canceled) {
+            setImagePicker(imagePicker.concat([result.assets[0].uri]));
+            setImageArray(imageArray.concat([result.assets[0].uri]));
+        }
     }
 
     const photographImage = async () => {
@@ -227,9 +247,64 @@ const FormFuel = ({ navigation }) => {
             aspect: [3,4],
             quality: 1,
         })
-      
-        if (!result.canceled)
-            setImagePicker(imagePicker.concat([result]));
+
+        const fileName = result.assets[0].uri.split('/').pop();
+        const fileType = fileName.split('.').pop();
+
+        const formData = new FormData()
+        formData.append('file_fuel', { 
+            uri: result.assets[0].uri, 
+            name: fileName, 
+            type: `image/${fileType}` 
+        });
+
+        const token = await AsyncStorage.getItem('token')
+ 
+        let _upload_temps = await uploadTmpFileFuel(token, formData)
+        if (_upload_temps.status == true) {
+            setAttachImage(attachImage.concat( {
+                name: _upload_temps.data.name,
+                file_type: _upload_temps.data.file_type,
+                file_size: _upload_temps.data.file_size,
+                duong_dan: _upload_temps.data.duong_dan,
+                id : null,
+                file_action: "3",
+                file_change: null,
+            }))
+        }
+
+        if (!result.canceled) {
+            setImagePicker(imagePicker.concat([result.assets[0].uri]));
+            setImageArray(imageArray.concat([result.assets[0].uri]));
+        }
+    }
+
+    const deleteImage = (item, index) => {
+        Alert.alert('Bạn có muốn Xoá', '', [
+			{
+				text: 'Cancel',
+			},
+			{
+				text: 'OK',
+				onPress: () => {
+					// Xử lý data image
+                    // Check item image
+                    const _clone_image_date = [...attachImage|| [], ...formFuel.file_attach || []]
+                    _clone_image_date.forEach(i => {
+                        if (i.name === item.split('/').pop()) {
+                            i.file_action = "1"
+                        }
+                    })
+                    setDeleteArrayImage(_clone_image_date)
+
+                    // Xử lý view
+                    const _clone_array_image = [...imageArray]
+                    const removeIndex = _clone_array_image.findIndex((i) => i === item);
+                    _clone_array_image.splice(removeIndex, 1)
+                    setImageArray([..._clone_array_image])
+				},
+			},
+		]);
     }
 
     const pickOptions = () => {
@@ -433,13 +508,14 @@ const FormFuel = ({ navigation }) => {
                         <View className='mt-4 mx-8 h-80 border-white border-2 rounded-xl p-3'>
                             <Swiper>
                             {
-                                imagePicker.length
+                                imageArray.length > 0 
                                 ?
-                                imagePicker.map((item, index) => (
-                                    <View className='border-2 border-[#b0b0b0] border-dashed' key={index}>
-                                        <Image source={{uri: item.assets[0].uri}} className='h-full w-full'></Image> 
+                                imageArray.map((item, index) => (
+                                    <View className='border-2 border-[#b0b0b0] border-dashed' key={index} style={css.container}>
+                                        <Image source={{uri: item}}  className='h-full w-full'></Image> 
+                                        <Icon name="trash" style={css.delete_icon} size={30} color='#4630EB' onPress={()=>deleteImage(item, index)}></Icon>
                                     </View>
-                                ))
+                                )) 
                                 :
                                 <View className='border-2 border-[#b0b0b0] border-dashed flex-1'>
                                     <Image source={blankImg} className='h-full w-full'></Image> 
@@ -463,5 +539,20 @@ const FormFuel = ({ navigation }) => {
         </View>
     )
 }
+
+const css = StyleSheet.create({
+	container: {
+		// display: 'inline-block',
+        position: 'relative'
+	},
+	image: {
+        // display: 'block'
+	},
+	delete_icon: {
+		position: 'absolute', 
+        top:10,
+        right: 10
+	},
+});
 
 export default FormFuel
