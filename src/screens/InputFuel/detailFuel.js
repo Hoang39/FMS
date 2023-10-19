@@ -183,15 +183,12 @@ const DetailFuel = ({ navigation, route }) => {
     const handleUpdate = async () => {
         const token = await AsyncStorage.getItem('token')
 
-        if (deleteArrayImage && deleteArrayImage.length > 0) {
-            let _newArray = [...formFuel.file_attach ||[], ...deleteArrayImage||[]]
-            let myJsonString = JSON.stringify(_newArray)
-            formFuel.file_attach = myJsonString
-        }else{
-            let _newArray = [...formFuel.file_attach ||[], ...attachImage||[]]
-            let myJsonString = JSON.stringify(_newArray)
-            formFuel.file_attach = myJsonString
-        }
+        console.log('formFuel.file_attach:',formFuel.file_attach);
+        console.log('attachImage:', attachImage);
+        console.log('deleteArrayImage:', deleteArrayImage);
+        let _newArray = [...formFuel.file_attach ||[], ...attachImage||[]]
+        let myJsonString = JSON.stringify(_newArray)
+        formFuel.file_attach = myJsonString
 
         const res = await updateFuelChange(token, formFuel, id)
 
@@ -274,7 +271,7 @@ const DetailFuel = ({ navigation, route }) => {
 
         if (!result.canceled) {
             setImagePicker(imagePicker.concat([result.assets[0].uri]));
-            setImageArray(imageArray.concat([result.assets[0].uri]));
+            setImageArray(imageArray.concat(['http://testv4.adagps.com/' + _upload_temps.data.duong_dan + _upload_temps.data.name]));
         }
     }
 
@@ -312,7 +309,7 @@ const DetailFuel = ({ navigation, route }) => {
 
         if (!result.canceled) {
             setImagePicker(imagePicker.concat([result.assets[0].uri]));
-            setImageArray(imageArray.concat([result.assets[0].uri]));
+            setImageArray(imageArray.concat(['http://testv4.adagps.com/' + _upload_temps.data.duong_dan + _upload_temps.data.name]));
         }
     }
 
@@ -326,13 +323,11 @@ const DetailFuel = ({ navigation, route }) => {
 				onPress: () => {
 					// Xử lý data image
                     // Check item image
-                    const _clone_image_date = [...attachImage|| [], ...formFuel.file_attach || []]
-                    _clone_image_date.forEach(i => {
-                        if (i.name === item.split('/').pop()) {
-                            i.file_action = "1"
-                        }
-                    })
-                    setDeleteArrayImage(_clone_image_date)
+                    let _clone_image_date = [...attachImage|| [], ...formRegistry.file_attach || []]
+                    _clone_image_date = _clone_image_date.filter(i => i.name === item.split('/').pop())
+                    setAttachImage(attachImage.filter(e => e.name !== item.split('/').pop()))
+                    _clone_image_date.forEach(i => i.file_action = "1")
+                    setDeleteArrayImage([..._clone_image_date, ...deleteArrayImage])
 
                     // Xử lý view
                     const _clone_array_image = [...imageArray]
