@@ -79,11 +79,11 @@ export const viewRegistry = async(token, id, vehicle_id) => {
 };
 
 export const updateRegistry = async(token, formRegistry) => {
-  console.log(formRegistry);
+  console.log(formRegistry.file_attach);
   try {
     const res = await axios({
       method: "post",
-      url: `${testv4_api_url}/api/TabHoSoGiayToController/updateBaoHiem`,
+      url: `${testv4_api_url}/api/TabHoSoGiayToController/updateDangKiem`,
       data: formRegistry,
       headers: {
         Authorization: `Bearer ${token}`,
@@ -97,6 +97,7 @@ export const updateRegistry = async(token, formRegistry) => {
 };
 
 export const upLoadImageRegistry = async(token, file_image) => {
+  console.log(file_image._parts);
   try {
     const res = await axios({
       method: "post",

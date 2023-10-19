@@ -79,6 +79,7 @@ export const insertToll = async(token, formToll) => {
 };
 
 export const updateToll = async(token, formToll) => {
+    console.log(formToll.file_attach);
     try {
       const res = await axios({
         method: "post",
@@ -111,6 +112,7 @@ export const viewToll = async(token, id, vehicle_id) => {
   };
 
   export const upLoadImageToll = async(token, file_image) => {
+    console.log(file_image._parts);
     try {
       const res = await axios({
         method: "post",

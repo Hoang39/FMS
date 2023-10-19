@@ -540,7 +540,7 @@ const DetailFuel = ({ navigation, route }) => {
                         </View>
 
                         <View className='flex flex-row mt-6 mx-8 justify-between space-x-4'>
-                            <Text className='px-2 py-2 font-medium'>Thêm hình ảnh ({imagePicker.length})</Text>
+                            <Text className='px-2 py-2 font-medium'>Thêm hình ảnh ({imageArray.length})</Text>
                             <Pressable 
                                 onPress={() => pickOptions()}
                                 className='flex flex-row justify-around w-[50%] bg-btn_color py-3 rounded-2xl' 

@@ -117,16 +117,10 @@ const FormToll = ({ navigation }) => {
         formToll.is_remind_issue = 0
         formToll.is_remind_email = isChecked? "1" : "0"
 
-        if (deleteArrayImage && deleteArrayImage.length > 0) {
-            let _newArray = [...formToll.file_attach ||[], ...deleteArrayImage||[]]
-            let myJsonString = JSON.stringify(_newArray)
-            formToll.file_attach = myJsonString
-        }else{
-            let _newArray = [...formToll.file_attach ||[], ...attachImage||[]]
-            let myJsonString = JSON.stringify(_newArray)
-            formToll.file_attach = myJsonString
-        }
-
+        let _newArray = [...formToll.file_attach ||[], ...attachImage||[]]
+        let myJsonString = JSON.stringify(_newArray)
+        formToll.file_attach = myJsonString
+        
         const res = await insertToll(token, formToll)
 
         if (res.status) {
@@ -254,9 +248,9 @@ const FormToll = ({ navigation }) => {
             }))
         }
 
-        if (!result.canceled) {
+        if (!result.canceled && _upload_temps.status == true) {
             setImagePicker(imagePicker.concat([result.assets[0].uri]));
-            setImageArray(imageArray.concat([result.assets[0].uri]));
+            setImageArray(imageArray.concat(['http://testv4.adagps.com/' + _upload_temps.data.duong_dan + _upload_temps.data.name]));
         }
     }
 
@@ -292,9 +286,9 @@ const FormToll = ({ navigation }) => {
             }))
         }
 
-        if (!result.canceled) {
+        if (!result.canceled && _upload_temps.status == true) {
             setImagePicker(imagePicker.concat([result.assets[0].uri]));
-            setImageArray(imageArray.concat([result.assets[0].uri]));
+            setImageArray(imageArray.concat(['http://testv4.adagps.com/' + _upload_temps.data.duong_dan + _upload_temps.data.name]));
         }
     }
 
@@ -308,13 +302,11 @@ const FormToll = ({ navigation }) => {
 				onPress: () => {
 					// Xử lý data image
                     // Check item image
-                    const _clone_image_date = [...attachImage|| [], ...formToll.file_attach || []]
-                    _clone_image_date.forEach(i => {
-                        if (i.name === item.split('/').pop()) {
-                            i.file_action = "1"
-                        }
-                    })
-                    setDeleteArrayImage(_clone_image_date)
+                    let _clone_image_date = [...attachImage|| [], ...formToll.file_attach || []]
+                    _clone_image_date = _clone_image_date.filter(i => i.name === item.split('/').pop())
+                    setAttachImage(attachImage.filter(e => e.name !== item.split('/').pop()))
+                    _clone_image_date.forEach(i => i.file_action = "1")
+                    setDeleteArrayImage([..._clone_image_date, ...deleteArrayImage])
 
                     // Xử lý view
                     const _clone_array_image = [...imageArray]
@@ -495,7 +487,7 @@ const FormToll = ({ navigation }) => {
                         </View>
 
                         <View className='flex flex-row mt-6 mx-8 justify-between space-x-4'>
-                            <Text className='px-2 py-2 font-medium'>Thêm hình ảnh ({imagePicker.length})</Text>
+                            <Text className='px-2 py-2 font-medium'>Thêm hình ảnh ({imageArray.length})</Text>
                             <Pressable 
                                 onPress={() => pickOptions()}
                                 className='flex flex-row justify-around w-[50%] bg-btn_color py-3 rounded-2xl' 

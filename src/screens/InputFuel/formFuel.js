@@ -148,15 +148,12 @@ const FormFuel = ({ navigation }) => {
         const token = await AsyncStorage.getItem('token')
         const res = await insertFuelChange(token, formFuel)
 
-        if (deleteArrayImage && deleteArrayImage.length > 0) {
-            let _newArray = [...formFuel.file_attach ||[], ...deleteArrayImage||[]]
-            let myJsonString = JSON.stringify(_newArray)
-            formFuel.file_attach = myJsonString
-        }else{
-            let _newArray = [...formFuel.file_attach ||[], ...attachImage||[]]
-            let myJsonString = JSON.stringify(_newArray)
-            formFuel.file_attach = myJsonString
-        }
+        console.log('formFuel.file_attach:',formFuel.file_attach);
+        console.log('attachImage:', attachImage);
+        console.log('deleteArrayImage:', deleteArrayImage);
+        let _newArray = [...formFuel.file_attach ||[], ...attachImage||[]]
+        let myJsonString = JSON.stringify(_newArray)
+        formFuel.file_attach = myJsonString
 
         if (res.status) {
             Alert.alert('Thành công', 'Bạn thêm lần nạp/xả thành công')
@@ -214,7 +211,7 @@ const FormFuel = ({ navigation }) => {
         const fileType = fileName.split('.').pop();
 
         const formData = new FormData()
-        formData.append('file_fuel', { 
+        formData.append('file_nhienlieu', { 
             uri: result.assets[0].uri, 
             name: fileName, 
             type: `image/${fileType}` 
@@ -237,7 +234,7 @@ const FormFuel = ({ navigation }) => {
 
         if (!result.canceled) {
             setImagePicker(imagePicker.concat([result.assets[0].uri]));
-            setImageArray(imageArray.concat([result.assets[0].uri]));
+            setImageArray(imageArray.concat(['http://testv4.adagps.com/' + _upload_temps.data.duong_dan + _upload_temps.data.name]));
         }
     }
 
@@ -252,7 +249,7 @@ const FormFuel = ({ navigation }) => {
         const fileType = fileName.split('.').pop();
 
         const formData = new FormData()
-        formData.append('file_fuel', { 
+        formData.append('file_nhienlieu', { 
             uri: result.assets[0].uri, 
             name: fileName, 
             type: `image/${fileType}` 
@@ -275,7 +272,7 @@ const FormFuel = ({ navigation }) => {
 
         if (!result.canceled) {
             setImagePicker(imagePicker.concat([result.assets[0].uri]));
-            setImageArray(imageArray.concat([result.assets[0].uri]));
+            setImageArray(imageArray.concat(['http://testv4.adagps.com/' + _upload_temps.data.duong_dan + _upload_temps.data.name]));
         }
     }
 
@@ -289,13 +286,11 @@ const FormFuel = ({ navigation }) => {
 				onPress: () => {
 					// Xử lý data image
                     // Check item image
-                    const _clone_image_date = [...attachImage|| [], ...formFuel.file_attach || []]
-                    _clone_image_date.forEach(i => {
-                        if (i.name === item.split('/').pop()) {
-                            i.file_action = "1"
-                        }
-                    })
-                    setDeleteArrayImage(_clone_image_date)
+                    let _clone_image_date = [...attachImage|| [], ...formRegistry.file_attach || []]
+                    _clone_image_date = _clone_image_date.filter(i => i.name === item.split('/').pop())
+                    setAttachImage(attachImage.filter(e => e.name !== item.split('/').pop()))
+                    _clone_image_date.forEach(i => i.file_action = "1")
+                    setDeleteArrayImage([..._clone_image_date, ...deleteArrayImage])
 
                     // Xử lý view
                     const _clone_array_image = [...imageArray]
@@ -495,7 +490,7 @@ const FormFuel = ({ navigation }) => {
                         </View>
 
                         <View className='flex flex-row mt-6 mx-8 justify-between space-x-4'>
-                            <Text className='px-2 py-2 font-medium'>Thêm hình ảnh ({imagePicker.length})</Text>
+                            <Text className='px-2 py-2 font-medium'>Thêm hình ảnh ({imageArray.length})</Text>
                             <Pressable 
                                 onPress={() => pickOptions()}
                                 className='flex flex-row justify-around w-[50%] bg-btn_color py-3 rounded-2xl' 

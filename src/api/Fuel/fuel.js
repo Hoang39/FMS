@@ -132,15 +132,16 @@ export const updateFuelChange = async(token, formFuel, id) => {
 };
 
 export const uploadTmpFileFuel = async(token, file_image) => {
+  console.log(file_image._parts);
   try {
     const res = await axios({
       method: "post",
       url: `${testv4_api_url}/api/FuelExtendedChangeController/uploadTmpFileFuel`,
+      data: file_image,
       headers: {
         Authorization: `Bearer ${token}`,
         "Content-Type": "multipart/form-data",
       },
-      data: file_image,
     });
     console.log(res.data.trim())
     return JSON.parse(res.data.trim())
