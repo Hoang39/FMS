@@ -15,6 +15,8 @@ import blankImg from '../../assets/images/blankImg.png'
 import { getFuelTypeList, getLocationList, getVehiclesList, updateFuelChange, uploadTmpFileFuel, viewFuelChange } from '../../api/Fuel/fuel';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
+import testv4_url from '../../api/url2'
+
 const formatDate = (date, specChar = '-') => {
     var d = new Date(date),
     month = '' + (d.getMonth() + 1),
@@ -109,7 +111,7 @@ const DetailFuel = ({ navigation, route }) => {
             let _item_of_image = []
             if (res.file_attach && res.file_attach.length > 0) {
                 res.file_attach.forEach(element => {
-                    let _url = 'http://testv4.adagps.com/' + element.duong_dan + element.name
+                    let _url = testv4_url + element.duong_dan + element.name
                     _item_of_image.push(_url)
                 });
             }
@@ -248,7 +250,7 @@ const DetailFuel = ({ navigation, route }) => {
         const fileType = fileName.split('.').pop();
 
         const formData = new FormData()
-        formData.append('file_fuel', { 
+        formData.append('file_attach', { 
             uri: result.assets[0].uri, 
             name: fileName, 
             type: `image/${fileType}` 
@@ -271,7 +273,7 @@ const DetailFuel = ({ navigation, route }) => {
 
         if (!result.canceled) {
             setImagePicker(imagePicker.concat([result.assets[0].uri]));
-            setImageArray(imageArray.concat(['http://testv4.adagps.com/' + _upload_temps.data.duong_dan + _upload_temps.data.name]));
+            setImageArray(imageArray.concat([testv4_url + _upload_temps.data.duong_dan + _upload_temps.data.name]));
         }
     }
 
@@ -286,7 +288,7 @@ const DetailFuel = ({ navigation, route }) => {
         const fileType = fileName.split('.').pop();
 
         const formData = new FormData()
-        formData.append('file_fuel', { 
+        formData.append('file_attach', { 
             uri: result.assets[0].uri, 
             name: fileName, 
             type: `image/${fileType}` 
@@ -309,7 +311,7 @@ const DetailFuel = ({ navigation, route }) => {
 
         if (!result.canceled) {
             setImagePicker(imagePicker.concat([result.assets[0].uri]));
-            setImageArray(imageArray.concat(['http://testv4.adagps.com/' + _upload_temps.data.duong_dan + _upload_temps.data.name]));
+            setImageArray(imageArray.concat([testv4_url + _upload_temps.data.duong_dan + _upload_temps.data.name]));
         }
     }
 

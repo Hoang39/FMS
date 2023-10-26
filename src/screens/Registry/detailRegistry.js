@@ -18,6 +18,8 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { getRegistryCenterList, insertRegistry, upLoadImageRegistry, updateRegistry, viewRegistry } from '../../api/Registry/registry';
 import { getVehiclesList } from '../../api/Fuel/fuel';
 
+import testv4_url from '../../api/url2'
+
 const formatDate = (date, specChar = '-') => {
     var d = new Date(date),
     month = '' + (d.getMonth() + 1),
@@ -182,7 +184,7 @@ const DetailRegistry = ({ navigation, route }) => {
             let _item_of_image = []
             if (res.file_attach && res.file_attach.length > 0) {
                 res.file_attach.forEach(element => {
-                    let _url = 'http://testv4.adagps.com/' + element.duong_dan + element.name
+                    let _url = testv4_url + element.duong_dan + element.name
                     _item_of_image.push(_url)
                 });
             }
@@ -255,7 +257,7 @@ const DetailRegistry = ({ navigation, route }) => {
 
         if (!result.canceled) {
             setImagePicker(imagePicker.concat([result.assets[0].uri]));
-            setImageArray(imageArray.concat(['http://testv4.adagps.com/' + _upload_temps.data.duong_dan + _upload_temps.data.name]));
+            setImageArray(imageArray.concat([testv4_url + _upload_temps.data.duong_dan + _upload_temps.data.name]));
         }
     }
 
@@ -293,7 +295,7 @@ const DetailRegistry = ({ navigation, route }) => {
 
         if (!result.canceled) {
             setImagePicker(imagePicker.concat([result.assets[0].uri]));
-            setImageArray(imageArray.concat(['http://testv4.adagps.com/' + _upload_temps.data.duong_dan + _upload_temps.data.name]));
+            setImageArray(imageArray.concat([testv4_url + _upload_temps.data.duong_dan + _upload_temps.data.name]));
         }
     }
 

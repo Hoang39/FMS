@@ -18,6 +18,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { getRegistryCenterList, insertRegistry, upLoadImageRegistry } from '../../api/Registry/registry';
 import { loginInfo } from '../../api/User/user';
 import { getVehiclesList } from '../../api/Fuel/fuel';
+import testv4_url from '../../api/url2'
 
 const formatDate = (date, specChar = '-') => {
     var d = new Date(date),
@@ -214,7 +215,7 @@ const FormRegistry = ({ navigation }) => {
 
         if (!result.canceled) {
             setImagePicker(imagePicker.concat([result.assets[0].uri]));
-            setImageArray(imageArray.concat(['http://testv4.adagps.com/' + _upload_temps.data.duong_dan + _upload_temps.data.name]));
+            setImageArray(imageArray.concat([testv4_url + _upload_temps.data.duong_dan + _upload_temps.data.name]));
         }
     }
 
@@ -252,7 +253,7 @@ const FormRegistry = ({ navigation }) => {
 
         if (!result.canceled) {
             setImagePicker(imagePicker.concat([result.assets[0].uri]));
-            setImageArray(imageArray.concat(['http://testv4.adagps.com/' + _upload_temps.data.duong_dan + _upload_temps.data.name]));
+            setImageArray(imageArray.concat([testv4_url + _upload_temps.data.duong_dan + _upload_temps.data.name]));
         }
     }
 

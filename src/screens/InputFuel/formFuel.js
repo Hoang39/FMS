@@ -7,7 +7,7 @@ import * as ImagePicker from 'expo-image-picker'
 import Swiper from 'react-native-swiper';
 import Icon from 'react-native-vector-icons/FontAwesome5';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import mime from 'mime';
+import testv4_url from '../../api/url2'
 
 import { getFuelTypeList, getLocationList, getVehiclesList, insertFuelChange, uploadTmpFileFuel } from '../../api/Fuel/fuel';
 import { loginInfo } from '../../api/User/user';
@@ -211,7 +211,7 @@ const FormFuel = ({ navigation }) => {
         const fileType = fileName.split('.').pop();
 
         const formData = new FormData()
-        formData.append('file_nhienlieu', { 
+        formData.append('file_attach', { 
             uri: result.assets[0].uri, 
             name: fileName, 
             type: `image/${fileType}` 
@@ -234,7 +234,7 @@ const FormFuel = ({ navigation }) => {
 
         if (!result.canceled) {
             setImagePicker(imagePicker.concat([result.assets[0].uri]));
-            setImageArray(imageArray.concat(['http://testv4.adagps.com/' + _upload_temps.data.duong_dan + _upload_temps.data.name]));
+            setImageArray(imageArray.concat([testv4_url + _upload_temps.data.duong_dan + _upload_temps.data.name]));
         }
     }
 
@@ -249,7 +249,7 @@ const FormFuel = ({ navigation }) => {
         const fileType = fileName.split('.').pop();
 
         const formData = new FormData()
-        formData.append('file_nhienlieu', { 
+        formData.append('file_attach', { 
             uri: result.assets[0].uri, 
             name: fileName, 
             type: `image/${fileType}` 
@@ -272,7 +272,7 @@ const FormFuel = ({ navigation }) => {
 
         if (!result.canceled) {
             setImagePicker(imagePicker.concat([result.assets[0].uri]));
-            setImageArray(imageArray.concat(['http://testv4.adagps.com/' + _upload_temps.data.duong_dan + _upload_temps.data.name]));
+            setImageArray(imageArray.concat([testv4_url + _upload_temps.data.duong_dan + _upload_temps.data.name]));
         }
     }
 

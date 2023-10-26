@@ -1,1 +1,1 @@
-export default testv4_api_url = 'http://testv4.adagps.com/index.php'
+export default testv4_api_url = 'http://testv4.adagps.com/index.php';

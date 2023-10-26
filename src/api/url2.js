@@ -1,0 +1,1 @@
+export default testv4_url = 'http://testv4.adagps.com/';

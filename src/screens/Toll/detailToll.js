@@ -19,6 +19,7 @@ import { getRegistryCenterList } from '../../api/Registry/registry';
 import { getVehiclesList } from '../../api/Fuel/fuel';
 import { getVehiclePeriodTollList, getVehicleTollList, insertToll, upLoadImageToll, updateToll, viewToll } from '../../api/Toll/toll';
 import { ActivityIndicator } from 'react-native';
+import testv4_url from '../../api/url2'
 
 const formatDate = (date, specChar = '-') => {
     var d = new Date(date),
@@ -223,7 +224,7 @@ const DetailToll = ({ navigation, route }) => {
             let _item_of_image = []
             if (res.file_attach && res.file_attach.length > 0) {
                 res.file_attach.forEach(element => {
-                    let _url = 'http://testv4.adagps.com/' + element.duong_dan + element.name
+                    let _url = testv4_url + element.duong_dan + element.name
                     _item_of_image.push(_url)
                 });
             }
@@ -303,7 +304,7 @@ const DetailToll = ({ navigation, route }) => {
 
         if (!result.canceled && _upload_temps.status == true) {
             setImagePicker(imagePicker.concat([result.assets[0].uri]));
-            setImageArray(imageArray.concat(['http://testv4.adagps.com/' + _upload_temps.data.duong_dan + _upload_temps.data.name]));
+            setImageArray(imageArray.concat([testv4_url + _upload_temps.data.duong_dan + _upload_temps.data.name]));
         }
     }
 
@@ -341,7 +342,7 @@ const DetailToll = ({ navigation, route }) => {
 
         if (!result.canceled && _upload_temps.status == true) {
             setImagePicker(imagePicker.concat([result.assets[0].uri]));
-            setImageArray(imageArray.concat(['http://testv4.adagps.com/' + _upload_temps.data.duong_dan + _upload_temps.data.name]));
+            setImageArray(imageArray.concat([testv4_url + _upload_temps.data.duong_dan + _upload_temps.data.name]));
         }
     }
 
